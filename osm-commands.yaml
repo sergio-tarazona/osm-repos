@@ -1,0 +1,28 @@
+#create a vim
+osm vim-create --name whitecloud --user whitestack --password whitestack20$ --auth_url http://172.21.247.1:5000/v3 --tenant whitestack --account_type openstack
+#create a vim with sriov physnet
+osm vim-create --name whitecloud --user whitestack --password whitestack20$ --auth_url http://172.21.247.1:5000/v3 --tenant whitestack --account_type openstack --config '{dataplane_physical_net: physnet2, microversion: 2.32}'
+#create a sdnc
+osm sdnc-create --name onos_etsi --type onos_vpls --url http://172.21.248.11:8181 --user karaf --password karaf
+#update vim with sdnc parameters
+osm vim-update whitecloud --sdn_controller onos_etsi  --sdn_port_mapping sdn_port_mapping.yaml
+#create helm chart repo 
+osm repo-add --ca-file ca.crt --user admin --password Harbor123 --type helm-chart whiteregistry https://registry.dev.whitestack.com/chartrepo/library
+osm repo-add --type helm-chart helm-plugtest https://sergio-tarazona.github.io/helm-plugtest/
+#create a k8s cluster
+osm k8scluster-add --creds .kube/config --version '1.21.1' --vim test-vim --description "test" --k8s-nets '{"net1": "PUBLIC"}' K8sWhitemist
+#create project and user
+osm project-create occnp
+osm user-create occnp --projects occnp --project-role-mappings occnp,admin
+#create a vim with htpps 
+osm vim-create \
+--name whitecloudpoc \
+--user admin \
+--password X25oydL4ukkId5GAumBlDR1GYKD7LH5LWHA67NIL \
+--auth_url https://172.20.95.130:5000/v3 \
+--tenant TELCO_CLOUD \
+--account_type openstack \
+--config='{insecure: True}'
+#creat a NS
+osm ns-create --ns_name epa_04 --nsd_name epa_1vm_sriov-ns --vim_account whitecloud --config '{vld: [ {name: mgmtnet, vim-network-name: osm-ext} , {name: datanet, ip-profile: {ip-version: ipv4, subnet-address: "192.168.200.0/24"}, vnfd-connection-point-ref: [ {member-vnf-index-ref: "vnf1", vnfd-connection-point-ref: vnf-data-ext, ip-address: "192.168.200.11"}, {member-vnf-index-ref: "vnf2", vnfd-connection-point-ref: vnf-data-ext, ip-address: "192.168.200.22"}]} ] }'
+

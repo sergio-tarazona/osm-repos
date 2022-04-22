@@ -1,0 +1,39 @@
+nsd:
+  nsd:
+  - description: NS with 2 VNFs epa_1vm_sriov-vnf connected by datanet and mgmtnet
+      VLs
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: vnf1
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf1
+            constituent-cpd-id: vnf-mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf1
+            constituent-cpd-id: vnf-data-ext
+          virtual-link-profile-id: datanet
+        vnfd-id: epa_1vm_sriov-vnf
+      - id: vnf2
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf2
+            constituent-cpd-id: vnf-mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf2
+            constituent-cpd-id: vnf-data-ext
+          virtual-link-profile-id: datanet
+        vnfd-id: epa_1vm_sriov-vnf
+    id: epa_1vm_sriov-ns
+    name: epa_1vm_sriov-ns
+    version: 1.0
+    virtual-link-desc:
+    - id: mgmtnet
+      mgmt-network: true
+    - id: datanet
+    vnfd-id:
+    - epa_1vm_sriov-vnf
+
