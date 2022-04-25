@@ -1,0 +1,72 @@
+vnfd:
+  description: A basic VNF descriptor w/ one VDU
+  df:
+  - id: default-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id: basic-VM
+    vdu-profile:
+    - id: basic-VM
+      min-number-of-instances: 1
+  ext-cpd:
+  - id: vnf-cp0-ext
+    int-cpd:
+      cpd: vdu-eth0-int
+      vdu-id: basic-VM
+  - id: vnf-data-ext
+    int-cpd:
+      cpd: xe0-int
+      vdu-id: basic-VM
+  id: basic-vnf
+  mgmt-cp: vnf-cp0-ext
+  product-name: basic-vnf
+  sw-image-desc:
+  - id: ubuntu20.04
+    name: ubuntu20.04
+    image: ubuntu20.04
+  - id: ubuntu20.04-aws
+    name: ubuntu20.04-aws
+    image: ubuntu/images/hvm-ssd/ubuntu-artful-17.10-amd64-server-20180509
+    vim-type: aws
+  - id: ubuntu20.04-azure
+    name: ubuntu20.04-azure
+    image: Canonical:UbuntuServer:18.04-LTS:latest
+    vim-type: azure
+  - id: ubuntu20.04-gcp
+    name: ubuntu20.04-gcp
+    image: ubuntu-os-cloud:image-family:ubuntu-1804-lts
+    vim-type: gcp
+  vdu:
+  - id: basic-VM
+    name: basic-VM
+    sw-image-desc: ubuntu20.04
+    alternative-sw-image-desc:
+    - ubuntu20.04-aws
+    - ubuntu20.04-azure
+    - ubuntu20.04-gcp
+    virtual-compute-desc: basic-VM-compute
+    virtual-storage-desc:
+    - basic-VM-storage
+    int-cpd:
+    - id: vdu-eth0-int
+      virtual-network-interface-requirement:
+      - name: vdu-eth0
+        virtual-interface:
+          type: PARAVIRT
+    - id: xe0-int
+      virtual-network-interface-requirement:
+      - name: xe0
+        virtual-interface:
+          type: PARAVIRT
+  version: 1.0
+  virtual-compute-desc:
+  - id: basic-VM-compute
+    virtual-cpu:
+      num-virtual-cpu: 1
+    virtual-memory:
+      size: 1.0
+  virtual-storage-desc:
+  - id: basic-VM-storage
+    size-of-storage: 10

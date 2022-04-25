@@ -1,0 +1,1 @@
+7728263fb58031e717f0e45afa0d18a8	basic_vnf/basic_vnfd.yaml

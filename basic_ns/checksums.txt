@@ -1,0 +1,1 @@
+b1dce72324ee894a04c5d414ba9dc883	basic_ns/basic_nsd.yaml
