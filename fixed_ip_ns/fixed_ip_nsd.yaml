@@ -1,0 +1,42 @@
+nsd:
+  nsd:
+  - description: NS with 2 VNF, both have fixed IPs in datanet network, and additional mgmtnet
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: vnf1
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf1
+            constituent-cpd-id: vnf-mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf1
+            constituent-cpd-id: vnf-data-ext
+            ip-address: 192.168.1.2
+          virtual-link-profile-id: datanet
+        vnfd-id: fixed_ip-vnf
+      - id: vnf2
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf2
+            constituent-cpd-id: vnf-mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf2
+            constituent-cpd-id: vnf-data-ext
+            ip-address: 192.168.1.3
+          virtual-link-profile-id: datanet
+        vnfd-id: fixed_ip-vnf
+    id: fixed_ip-ns
+    name: fixed_ip-ns
+    version: 1.0
+    virtual-link-desc:
+    - id: mgmtnet
+      mgmt-network: true
+      vim-network-name: osm-ext
+    - id: datanet
+      vim-network-name: 5g-inter-vm
+    vnfd-id:
+    - fixed_ip-vnf
+

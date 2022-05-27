@@ -1,0 +1,28 @@
+nsd:
+  nsd:
+  - description: Single sample_ee VNF
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: sample_ee
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: sample_ee
+            constituent-cpd-id: vnf-mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: sample_ee
+            constituent-cpd-id: vnf-internal-ext
+          virtual-link-profile-id: internal
+        vnfd-id: sample_ee-vnf
+    id: sample_ee-ns
+    name: sample_ee-ns
+    version: 1.0
+    virtual-link-desc:
+    - id: mgmtnet
+      mgmt-network: true
+      vim-network-name: osm-ext
+    - id: internal
+      vim-network-name: 5g-inter-vm
+    vnfd-id:
+    - sample_ee-vnf

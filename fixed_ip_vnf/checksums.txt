@@ -1,0 +1,2 @@
+003792bd309ddb1c8e6cbd0f0d839e11	fixed_ip_vnf/fixed_ip_vnfd.yaml
+3f85b13f41feac0a15ea1e66732eb094	fixed_ip_vnf/cloud_init/cloud-config.txt

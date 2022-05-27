@@ -1,0 +1,11 @@
+vld:
+- name: mgmtnet
+  vim-network-name: osm-ext
+- name: datanet
+  ip-profile:
+    ip-version: ipv4
+    subnet-address: 192.168.100.0/24
+  vnfd-connection-point-ref:
+  - member-vnf-index-ref: 'vnf1'
+    vnfd-connection-point-ref: vnf-data-ext
+    ip-address: 192.168.100.10 

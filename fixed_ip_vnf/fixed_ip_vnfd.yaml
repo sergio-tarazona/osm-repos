@@ -1,0 +1,87 @@
+vnfd:
+  description: A VNF consisting of 1 VDU with 2 paravirt interfaces
+  df:
+  - id: default-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id: dataVM
+    vdu-profile:
+    - id: dataVM
+      min-number-of-instances: 1
+      affinity-or-anti-affinity-group:
+      - id: affinity-group-1
+    affinity-or-anti-affinity-group:
+    - id: affinity-group-1
+      type: anti-affinity
+      scope: nfvi-node
+  ext-cpd:
+  - id: vnf-mgmt-ext
+    int-cpd:
+      cpd: eth0-int
+      vdu-id: dataVM
+  - id: vnf-data-ext
+    int-cpd:
+      cpd: eth1-int
+      vdu-id: dataVM
+  id: fixed_ip-vnf
+  mgmt-cp: vnf-mgmt-ext
+  product-name: fixed_ip-vnf
+  sw-image-desc:
+  - id: ubuntu20.04
+    image: ubuntu20.04
+    name: ubuntu20.04
+  - id: ubuntu20.04-aws
+    name: ubuntu20.04-aws
+    image: ubuntu/images/hvm-ssd/ubuntu-artful-17.10-amd64-server-20180509
+    vim-type: aws
+  - id: ubuntu20.04-azure
+    name: ubuntu20.04-azure
+    image: Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest
+    vim-type: azure
+  vdu:
+  - cloud-init-file: cloud-config.txt
+    id: dataVM
+    int-cpd:
+    - id: eth0-int
+      virtual-network-interface-requirement:
+      - name: eth0
+        position: 1
+        virtual-interface:
+          type: PARAVIRT
+    - id: eth1-int
+      virtual-network-interface-requirement:
+      - name: eth1
+        position: 2
+        virtual-interface:
+          type: PARAVIRT
+    name: dataVM
+    sw-image-desc: ubuntu20.04
+    alternative-sw-image-desc:
+    - ubuntu20.04-aws
+    - ubuntu20.04-azure
+    virtual-compute-desc: dataVM-compute
+    virtual-storage-desc:
+    - dataVM-storage
+  version: 1.0
+  virtual-compute-desc:
+  - id: dataVM-compute
+    virtual-cpu:
+      num-virtual-cpu: 2
+      pinning:
+        policy: static
+        thread-policy: PREFER
+    virtual-memory:
+      mempage-size: LARGE
+      numa-enabled: true
+      numa-node-policy:
+        mem-policy: STRICT
+        node:
+        - id: 1
+        node-cnt: 1
+      size: 4.0
+  virtual-storage-desc:
+  - id: dataVM-storage
+    size-of-storage: 10
+

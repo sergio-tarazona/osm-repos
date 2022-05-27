@@ -1,0 +1,12 @@
+vld:
+- name: mgmtnet
+  vim-network-name: osm-ext
+- name: datanet
+  vim-network-name: 5g-core-cp
+  vnfd-connection-point-ref:
+  - member-vnf-index-ref: 'vnf1'
+    vnfd-connection-point-ref: vnf-data-ext
+    ip-address: 192.168.18.18
+  - member-vnf-index-ref: 'vnf2'
+    vnfd-connection-point-ref: vnf-data-ext
+    ip-address: 192.168.18.19  

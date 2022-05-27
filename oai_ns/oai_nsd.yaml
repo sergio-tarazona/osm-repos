@@ -1,0 +1,22 @@
+nsd:
+  nsd:
+  - description: NS consisting of a 5G OAI core KNF
+    designer: OSM
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: oai
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: oai
+            constituent-cpd-id: mgmt-ext
+          virtual-link-profile-id: osm-ext
+        vnfd-id: oai_knf
+    id: oai_ns
+    name: oai_ns
+    version: '1.0'
+    virtual-link-desc:
+    - id: osm-ext
+      mgmt-network: 'true'
+    vnfd-id:
+    - oai_knf
