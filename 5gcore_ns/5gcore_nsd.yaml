@@ -12,9 +12,22 @@ nsd:
           virtual-link-profile-id: mgmtnet
         - constituent-cpd-id:
           - constituent-base-element-id: vnf1
-            constituent-cpd-id: vnf-data-ext
+            constituent-cpd-id: vnf-internal-ext
+            ip-address: 192.168.1.5
           virtual-link-profile-id: datanet
-        vnfd-id: fixed_ip-vnf
+        vnfd-id: gnbsim-vnf
+      - id: vnf2
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf2
+            constituent-cpd-id: vnf-mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: vnf2
+            constituent-cpd-id: vnf-internal-ext
+            ip-address: 192.168.1.6
+          virtual-link-profile-id: datanet
+        vnfd-id: ext-dn-vnf  
       - id: knf1
         virtual-link-connectivity:
         - constituent-cpd-id:
@@ -28,9 +41,11 @@ nsd:
     virtual-link-desc:
     - id: mgmtnet
       mgmt-network: true
+      vim-network-name: osm-ext
     - id: datanet
-      mgmt-network: true
+      vim-network-name: 5g-inter-vm
     vnfd-id:
-    - fixed_ip-vnf
+    - gnbsim-vnf
     - oai_knf
+    - ext-dn-vnf
 

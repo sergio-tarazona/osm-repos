@@ -30,5 +30,14 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+COMMAND="./$SCRIPT"
+[ ${#PARAMS} -ge 0 ] || COMMAND="${COMMAND=} $PARAMS"
+date "+%H:%M:%S Running '$COMMAND' on $IP..."
+ssh -T -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o LogLevel=ERROR "$USERNAME"@"$IP" "$COMMAND"
+if [ $? -ne 0 ]; then
+    date "+%H:%M:%S ssh error"
+    exit 1
+fi
+
 date "+%H:%M:%S End"
 exit 0

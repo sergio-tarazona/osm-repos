@@ -143,11 +143,11 @@ class VnfEE:
 
     # This method implements the "gnbsim_up" primitive. Uncomment and modify it if you need a primitive that
     # starts up the gnbsim to test 5G OAI Core. It only needs "file" parameter, in this case use gnbsim.
-    async def gnbsim_up(self, id, params):
+    async def ext_dn_up(self, id, params):
         self.logger.debug("Execute action gnbsim_up, params: '{}'".format(params))
 
         self._check_required_params(params, ["file"])
-        command = "docker-compose -f docker-compose-gnbsim.yaml up -d" + " " + params["file"]
+        command = "docker-compose up -d oai-ext-dn"
         return_code, description = await mylib.ssh_exec(self.config_params["ssh-hostname"], self.config_params["ssh-username"], command)
         if return_code != 0:
             yield "ERROR", description
@@ -156,11 +156,11 @@ class VnfEE:
     
     # This method implements the "gnbsim_down" primitive. Uncomment and modify it if you need a primitive that
     # stops the gnbsim for testing 5G OAI Core. It only needs "file" parameter, in this case use gnbsim.
-    async def gnbsim_down(self, id, params):
+    async def ext_dn_down(self, id, params):
         self.logger.debug("Execute action gnbsim_down, params: '{}'".format(params))
 
         self._check_required_params(params, ["file"])
-        command = "docker-compose -f docker-compose-gnbsim.yaml down"
+        command = "docker-compose down"
         return_code, description = await mylib.ssh_exec(self.config_params["ssh-hostname"], self.config_params["ssh-username"], command)
         if return_code != 0:
             yield "ERROR", description

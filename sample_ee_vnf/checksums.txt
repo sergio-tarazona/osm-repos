@@ -5,8 +5,7 @@
 96c62283405c349b77a78f358b05d0d3	sample_ee_vnf/helm-charts/eechart/source/install.sh
 6df3eb3a0adc535691b17299ad1fcc8c	sample_ee_vnf/helm-charts/eechart/source/docker-compose-gnbsim.yaml
 54d01b806ff95e5056ce6b09f33504e5	sample_ee_vnf/helm-charts/eechart/source/run_ssh.sh
-85079d5b8e03dc3daa8f2e05760080d6	sample_ee_vnf/helm-charts/eechart/source/copy_file.sh
-199f6027d6b4a8d952573da0d8730bb3	sample_ee_vnf/helm-charts/eechart/source/vnf_ee.py
+f934d3535488aefe235124053c840865	sample_ee_vnf/helm-charts/eechart/source/vnf_ee.py
 71e303b14ec4576d8fafc13274d5742c	sample_ee_vnf/helm-charts/eechart/source/playbook.yaml
 7a6d6021216df31fd025bc007ee1f60d	sample_ee_vnf/helm-charts/eechart/source/mylib.py
 ca1873d48a82286ac6965a9fd6f1c682	sample_ee_vnf/helm-charts/eechart/templates/mibs.yaml

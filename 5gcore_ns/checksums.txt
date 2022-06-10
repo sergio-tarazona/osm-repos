@@ -1,1 +1,1 @@
-fc71ec3c1f7535d6d003a6bc6ee3cb69	5gcore_ns/5gcore_nsd.yaml
+7b54a44da4f6f4e02710f74c87be9e71	5gcore_ns/5gcore_nsd.yaml

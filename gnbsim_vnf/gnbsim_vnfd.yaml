@@ -1,0 +1,183 @@
+vnfd:
+  description: gnbsim VNF with 2 networks attached
+  df:
+  - id: default-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id: gnbsim-VM
+    vdu-profile:
+    - id: gnbsim-VM
+      min-number-of-instances: 1
+    lcm-operations-configuration:
+      operate-vnf-op-config:
+        day1-2:
+        - config-primitive:
+          - execution-environment-primitive: gnbsim_up
+            execution-environment-ref: gnbsim
+            name: gnbsim_up
+            parameter:
+            - data-type: STRING
+              name: file
+          - execution-environment-primitive: gnbsim_down
+            execution-environment-ref: gnbsim
+            name: gnbsim_down
+            parameter:
+            - data-type: STRING
+              name: file    
+          - execution-environment-primitive: send_command
+            execution-environment-ref: gnbsim
+            name: send_command
+            parameter:
+            - data-type: STRING
+              name: file    
+          # - execution-environment-primitive: run_script
+          #   execution-environment-ref: gnbsim
+          #   name: run_script
+          #   parameter:
+          #   - data-type: STRING
+          #     name: file
+          #   - data-type: STRING
+          #     name: parameters
+          # - execution-environment-primitive: ansible_playbook
+          #   execution-environment-ref: gnbsim
+          #   name: ansible_playbook
+          #   parameter:
+          #   - data-type: STRING
+          #     name: playbook-name
+          #   - data-type: STRING
+          #     name: app
+          # - execution-environment-primitive: ping
+          #   execution-environment-ref: gnbsim
+          #   name: ping
+          # - execution-environment-primitive: http_check
+          #   execution-environment-ref: gnbsim
+          #   name: http_check
+          # - execution-environment-primitive: touch
+          #   execution-environment-ref: gnbsim
+          #   name: touch
+          #   parameter:
+          #   - data-type: STRING
+          #     name: file
+          # - execution-environment-primitive: check_database
+          #   execution-environment-ref: gnbsim
+          #   name: check_database
+          config-access:
+            ssh-access:
+              default-user: ubuntu
+              required: true
+          execution-environment-list:
+          - external-connection-point-ref: vnf-mgmt-ext
+            helm-chart: eechart
+            id: gnbsim
+          id: gnbsim-vnf
+          initial-config-primitive:
+          - execution-environment-ref: gnbsim
+            name: config
+            parameter:
+            - name: ssh-hostname
+              value: <rw_mgmt_ip>
+            - name: ssh-username
+              value: ubuntu
+            seq: 1
+          - execution-environment-ref: gnbsim
+            name: run_script
+            parameter:
+            - name: file
+              value: install_docker.sh
+            seq: 2  
+          - execution-environment-ref: gnbsim
+            name: copy_files
+            parameter:
+            - name: file
+              value: docker-compose-gnbsim.yaml
+            seq: 3
+          # - execution-environment-ref: gnbsim
+          #   name: ansible_playbook
+          #   parameter:
+          #     - name: playbook-name
+          #       value: playbook.yaml
+          #     - name: app
+          #       value: ntp
+          #   seq: 3
+          # - execution-environment-ref: gnbsim
+          #   name: ping
+          #   seq: 4
+          # - execution-environment-ref: gnbsim
+          #   name: http_check
+          #   seq: 5
+          # - execution-environment-ref: gnbsim
+          #   name: touch
+          #   parameter:
+          #   - name: file
+          #     value: myfile.txt
+          #   seq: 3
+          # - execution-environment-ref: gnbsim
+          #   name: check_database
+          #   seq: 7
+  ext-cpd:
+  - id: vnf-mgmt-ext
+    int-cpd:
+      cpd: vdu-eth0-int
+      vdu-id: gnbsim-VM
+  - id: vnf-internal-ext
+    int-cpd:
+      cpd: vdu-eth1-int
+      vdu-id: gnbsim-VM
+  id: gnbsim-vnf
+  mgmt-cp: vnf-mgmt-ext
+  product-name: gnbsim-vnf
+  sw-image-desc:
+  - id: ubuntu20.04
+    image: ubuntu20.04
+    name: ubuntu20.04
+  - id: ubuntu20.04-azure
+    name: ubuntu20.04-azure
+    image: Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest
+    vim-type: azure
+  - id: ubuntu20.04-gcp
+    name: ubuntu20.04-gcp
+    image: ubuntu-os-cloud:image-family:ubuntu-2004-lts
+    vim-type: gcp
+  vdu:
+  - id: gnbsim-VM
+    int-cpd:
+    - id: vdu-eth0-int
+      virtual-network-interface-requirement:
+      - name: vdu-eth0
+        position: 0
+        virtual-interface:
+          type: PARAVIRT
+    - id: vdu-eth1-int
+      virtual-network-interface-requirement:
+      - name: vdu-eth1
+        position: 1
+        virtual-interface:
+          type: PARAVIRT
+    - id: vdu-eth2-int
+      virtual-network-interface-requirement:
+      - name: vdu-eth2
+        position: 2
+        virtual-interface:
+          type: PARAVIRT
+    name: gnbsim-VM
+    supplemental-boot-data:
+      boot-data-drive: true
+    sw-image-desc: ubuntu20.04
+    alternative-sw-image-desc:
+    - ubuntu20.04-azure
+    - ubuntu20.04-gcp
+    virtual-compute-desc: gnbsim-VM-compute
+    virtual-storage-desc:
+    - gnbsim-VM-storage
+  version: 1.0
+  virtual-compute-desc:
+  - id: gnbsim-VM-compute
+    virtual-cpu:
+      num-virtual-cpu: 1
+    virtual-memory:
+      size: 4.0
+  virtual-storage-desc:
+  - id: gnbsim-VM-storage
+    size-of-storage: 20

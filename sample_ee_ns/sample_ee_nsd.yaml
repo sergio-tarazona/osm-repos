@@ -14,7 +14,7 @@ nsd:
           - constituent-base-element-id: sample_ee
             constituent-cpd-id: vnf-internal-ext
           virtual-link-profile-id: internal
-        vnfd-id: sample_ee-vnf
+        vnfd-id: ext-dn-vnf
     id: sample_ee-ns
     name: sample_ee-ns
     version: 1.0
@@ -25,4 +25,4 @@ nsd:
     - id: internal
       vim-network-name: 5g-inter-vm
     vnfd-id:
-    - sample_ee-vnf
+    - ext-dn-vnf
