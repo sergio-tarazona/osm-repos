@@ -1,0 +1,23 @@
+nsd:
+  nsd:
+  - description: Configuration of a PNF VyOS Router
+    designer: Whitestack
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: VYOS-PNF
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: VYOS-PNF
+            constituent-cpd-id: gateway_public-ext
+          virtual-link-profile-id: mgmt
+        vnfd-id: vyos_pnf
+    id: vyos-ns
+    name: vyos-ns
+    version: 1.0
+    virtual-link-desc:
+    - id: mgmt
+      mgmt-network: true
+    vnfd-id:
+    - vyos_pnf
+
