@@ -1,0 +1,2 @@
+osm vim-create --name whitecloud_external --user whitestack --password whitestack20$ --auth_url http://172.21.247.1:5000/v3 --tenant whitestack --account_type openstack
+osm pdu-create --descriptor_file pdu.yaml
