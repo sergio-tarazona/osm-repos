@@ -3,6 +3,6 @@ ssh_keys:
 k8s-namespace: oai
 vnf: 
 - member-vnf-index: gnbsim
-  vimAccountId: b0fe741c-37d9-4f42-bce7-b163122a9790
+  vimAccountId: 6697ad26-a814-4465-8891-4f7ff43ff4ff 
 - member-vnf-index: ext-server
-  vimAccountId: 74c9e008-28ce-45c4-9634-9aec3177fb76  
+  vimAccountId: cc1cea5f-229a-49d6-a110-817acac8fc86 

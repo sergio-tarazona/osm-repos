@@ -1,0 +1,1 @@
+7a81d76fe5101a27cfa95105f02e34c4	mec_knf/mec_vnfd.yaml

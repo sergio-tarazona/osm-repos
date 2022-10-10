@@ -1,0 +1,22 @@
+vnfd:
+  description: KNF with single KDU using a helm-chart for mec version 1.0.0
+  df:
+  - id: default-df
+  ext-cpd:
+  - id: mgmt-ext
+    k8s-cluster-net: mgmtnet
+  id: mec_knf
+  k8s-cluster:
+    nets:
+    - id: mgmtnet
+  kdu:
+  - name: mec
+    helm-chart: helm-plugtest/mec-platform 
+  - name: unibo02
+    helm-chart: helm-plugtest/unibotest02
+  - name: unibo03
+    helm-chart: helm-plugtest/unibotest03
+  mgmt-cp: mgmt-ext
+  product-name: mec_knf
+  provider: mec
+  version: '1.0'

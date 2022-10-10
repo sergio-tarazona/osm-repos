@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Wait 120 seconds, but only start checking after 10 seconds
+    wait_for_connection:
+      delay: 20
+      timeout: 120
+  - name: Install packages
+    apt:
+      name:
+      - "{{ app }}"
+      state: latest
+      cache_valid_time: 3600

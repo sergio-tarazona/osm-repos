@@ -1,0 +1,59 @@
+nsd:
+  nsd:
+  - description: NS with 1 VNF for gnbsim, 1 VNF for ext server, 1 PNF for VyOS router and 1 KNF for 5G OAI Core
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: gnbsim
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: gnbsim
+            constituent-cpd-id: vnf-mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: gnbsim
+            constituent-cpd-id: vnf-internal-ext
+            ip-address: 192.168.1.5
+          virtual-link-profile-id: datanet
+        vnfd-id: gnbsim-vnf
+      - id: ext-server
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: ext-server
+            constituent-cpd-id: vnf-mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        - constituent-cpd-id:
+          - constituent-base-element-id: ext-server
+            constituent-cpd-id: vnf-internal-ext
+            ip-address: 192.168.1.6
+          virtual-link-profile-id: datanet
+        vnfd-id: ext-dn-vnf
+      - id: vyos-pnf
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: vyos-pnf
+            constituent-cpd-id: gateway_public-ext
+          virtual-link-profile-id: mgmtnet
+        vnfd-id: vyos_pnf
+      - id: 5gcore_knf
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: 5gcore_knf
+            constituent-cpd-id: mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        vnfd-id: oai_knf
+    id: 5gcore-ns
+    name: 5gcore-ns
+    version: 1.0
+    virtual-link-desc:
+    - id: mgmtnet
+      mgmt-network: true
+      vim-network-name: osm-ext
+    - id: datanet
+      vim-network-name: 5g-inter-vm
+    vnfd-id:
+    - gnbsim-vnf
+    - oai_knf
+    - ext-dn-vnf
+    - vyos_pnf
+

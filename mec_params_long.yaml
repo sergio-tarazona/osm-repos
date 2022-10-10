@@ -1,0 +1,1628 @@
+k8s-namespace: mec
+vld:
+- name: mgmtnet
+  vim-network-name: osm-ext
+additionalParamsForVnf:
+- member-vnf-index: mec
+  additionalParamsForKdu:
+  - kdu_name: mec
+    additionalParams:
+      env:
+        # Copyright 2020 (C), Oracle and/or its affiliates. All rights reserved.
+        # section:- global
+        global:
+          imagePullPolicy: IfNotPresent
+          # Docker registry name
+          dockerRegistry: 'whiteregistry.sama.tcloud.temu.com.uy/oracle/occnp' # (Eduardo)
+          # Primary MYSQL Host IP or Hostname
+          envMysqlHost: &mySqlHostRef 'mysql-connectivity-service.sama-ns-cnpcrf-cnpdbtier'
+          envMysqlPort: &mySqlPortRef '3306'
+          envMysqlLoadBalancingEnabled: false
+          envMysqlLoadBalanceHosts: '' # (Eduardo) verificar el hostname del metalLb y su namespace
+          envMysqlDnsSrvEnabled: false
+          nfInstanceId: "NA"
+          # to enable ephemeral storage pass the default value
+          logStorage: 70 #default calculated value 70
+          crictlStorage: 1 #default calculated value 1
+          mySql:
+            connection:
+              maxLifeTime: '540000'
+              idleTimeout: '540000'
+              connectionTimeout: '2000'
+              validationTimeout: '500'
+              socketTimeout: '3000'
+            loadBalance:
+              serverBlocklistTimeout: '60000'
+          # Database conflict resolution. This feature is only available if the daatabase is MySQL cluster (NDB)
+          ndbConflictResolutionEnabled: true
+
+          serviceMeshEnabled: &serviceMeshEnabled false
+          istioSidecarQuitUrl: &istioSidecarQuitUrl http://127.0.0.1:15020/quitquitquit
+          istioSidecarReadyUrl: &istioSidecarReadyUrl http://127.0.0.1:15020/healthz/ready
+          # Jaegar hostname
+          envJaegerAgentHost: '' # (Eduardo) falta poner el nombre del svc y su namespace
+          envJaegerQueryUrl: ''
+          # K8s secret object name containing OCPCF MYSQL UserName and Password
+          dbCredSecretName: &dbCredSecretNameRef 'occnp-db-pass'
+          privilegedDbCredSecretName: 'occnp-privileged-db-pass'
+          #Release DB name containing release version details
+          releaseDbName: 'occnp_release'
+
+          # Disable init containers if occnp is deployed with istio or aspen service mesh
+          initContainerEnable: false
+
+          # Enable/disable PCF services
+          amServiceEnable: false # true # (Eduardo)
+          smServiceEnable: false #true # (Eduardo)
+          ueServiceEnable: false #true # (Eduardo)
+          nrfClientNfDiscoveryEnable: false #true # (Eduardo)
+          nrfClientNfManagementEnable: false #true # (Eduardo)
+          diamConnectorEnable: true
+          appinfoServiceEnable: true
+          performanceServiceEnable: true
+
+          # Enable userService only when policyDS is not enabled.
+          userServiceEnable: false
+          policydsEnable: true
+          # Enable udr and chf connectors only when policyDS is enabled
+          udrConnectorEnable: true
+          chfConnectorEnable: true
+
+          # Enable/disable PCRF services
+          pcrfCoreEnable: true
+          soapConnectorEnable: false
+
+          # Enable/disable common services
+          bulwarkServiceEnable: true
+          diamGatewayEnable: true
+          bindingSvcEnabled: true
+
+          ldapGatewayEnable: false
+          alternateRouteServiceEnable: false
+
+          cncMetricsName: cnc-metrics
+          exposeObservabilityAtService: false
+
+          #
+          # ********  Sub-Section Start: Custom Extension Global Parameters ********
+          #**************************************************************************
+
+          customExtension:
+            # The `factoryLabelTemplates` and `factoryAnnotationTemplates` can
+            # accept templates rather than plain text.
+            factoryLabelTemplates: {}
+            factoryAnnotationTemplates: {}
+
+            allResources:
+              labels: {}
+              annotations: {
+              #Enable this section for service-mesh based installation
+                # traffic.sidecar.istio.io/excludeInboundPorts: "9000",
+                # traffic.sidecar.istio.io/excludeOutboundPorts: "9000"
+              }
+            lbServices:
+              labels: {}
+              annotations: {}
+
+            lbDeployments:
+              labels: {}
+              annotations: {}
+                  # The annotation oracle.com/cnc: "true" is required if OSO is used
+                  #oracle.com/cnc: "true"
+                  #sidecar.istio.io/inject: "true"
+                  #sidecar.istio.io/rewriteAppHTTPProbers: "true"
+
+            nonlbServices:
+              labels: {}
+              annotations: {}
+                  # The annotation oracle.com/cnc: "true" is required if OSO is used
+                  #oracle.com/cnc: "true"
+                  #sidecar.istio.io/inject: "true"
+                  #sidecar.istio.io/rewriteAppHTTPProbers: "true"
+
+            nonlbDeployments:
+              labels: {}
+              annotations: {}
+
+          # ********  Sub-Section End: Custiom Extensions Global Parameters ********
+          #**************************************************************************
+
+
+          # ********  Sub-Section Start: Prefix/Suffix Global Parameters ************
+          #**************************************************************************
+
+          k8sResource:
+            container:
+              prefix:
+              suffix:
+          metricPrefix: &metricPrefix 'occnp'
+          metricSuffix: &metricSuffix ''
+
+          # ********  Sub-Section End: Prefix/Suffix Global Parameters *************
+          #**************************************************************************
+
+          # ******** Debug tools ********
+          #**************************************************************************
+          # Use 'extraContainers' attribute to control the usage of extra container(DEBUG tool).
+          # Allowed Values: DISABLED, ENABLED
+          extraContainers: DISABLED
+
+          # ********  Sub-Section Start: Service Port Customization parameters*******
+          #**************************************************************************
+          servicePorts:
+            # am service
+            pcfAmServiceHttp: 8000
+            pcfAmServiceHttps: 9443
+            # bulwark
+            bulwarkServiceHttp: 8000
+            # app info
+            appInfoHttp: &svcAppInfoHttp 8000
+            # audit service
+            auditServiceHttp: 8000
+            # binding
+            bindingHttp: 8000
+            bindingHttps: 9443
+            # cm service
+            cmServiceHttp: &svcCmServiceHttp 8000
+            # config server
+            configServerHttp: &svcConfigServerHttp 8000
+            # diam connector
+            diamConnectorHttp: 8000
+            diamConnectorDiameter: 3868
+            # ldap gateway
+            ldapGatewayHttp: 8000
+            ldapGatewayHttps: 9443
+            # diameter gateway
+            diamGatewayHttp: &svcDiamGatewayHttp 8000
+            diamGatewayDiameter: 3868
+            # pcrf core
+            pcrfCoreDiameter: 3868
+            pcrfCoreHttp: 8000
+            # perf info
+            perfInfoHttp: &svcPerfInfoHttp 8000
+            # policyds
+            policydsHttp: 8000
+            # pre service
+            preServiceHttp: 8000
+            preTestHttp: 8000
+            # query service
+            queryServiceHttp: 8000
+            # pcf sm service
+            pcfSmServiceHttp: 8000
+            pcfSmServiceHttps: 9443
+            # soap connector
+            soapConnectorHttp: 8000
+            # ue service
+            pcfUeServiceHttp: 8000
+            pcfUeServiceHttps: 9443
+            # udr and chf connector service
+            udrConnectorHttp: 8000
+            udrConnectorHttps: 9443
+            chfConnectorHttp: 8000
+            chfConnectorHttps: 9443
+            # ingress gateway
+            ingressGatewayHttp: &svcIngressGatewayHttp 80
+            # egress gateway
+            egressGatewayHttp: &svcEgressGatewayHttp 8000
+            # nrf client
+            nrfClientNfDiscoveryHttp: &svcNrfClientNfDiscoveryHttp 8000
+            nrfClientNfManagementHttp: &svcNrfClientNfManagementHttp 8000
+            nrfClientNfDiscoveryHttps: &svcNrfClientNfDiscoveryHttps 9443
+            nrfClientNfManagementHttps: &svcNrfClientNfManagementHttps 9443
+            # alternate route
+            alternateRouteServiceHttp: &svcAlternateRouteServiceHttp 8000
+            alternateRouteServiceHazelcast: &svcAlternateRouteServiceHazelcast 8000
+          # ********  Sub-Section End: Service Port Customization parameters  *******
+          #**************************************************************************
+
+
+          # ********  Sub-Section Start: Container Port Customization parameters  ***
+          #**************************************************************************
+          containerPorts:
+            monitoringHttp: &containerMonitoringHttp 9000
+            # am service
+            pcfAmServiceHttp: 8000
+            pcfAmServiceHttps: 9443
+            # bulwark
+            bulwarkServiceHttp: 8080
+            # app info
+            appInfoHttp: 8000
+            # audit service
+            auditServiceHttp: 8000
+            # binding
+            bindingHttp: 8000
+            bindingHttps: 9443
+            # cm service
+            cmServiceHttp: 8000
+            # config server
+            configServerHttp: 8000
+            # diam connector
+            diamConnectorHttp: 8000
+            diamConnectorDiameter: 3868
+            # ldap gateway
+            ldapGatewayHttp: 8000
+            # diameter gateway
+            diamGatewayHttp: 8000
+            diamGatewayDiameter: 3868
+            # pcrf core
+            pcrfCoreDiameter: 3868
+            pcrfCoreHttp: 8000
+            # perf info
+            perfInfoHttp: 8000
+            # policyds
+            policydsHttp: 8000
+            # pre service
+            preServiceHttp: 8000
+            preTestHttp: 8000
+            # query service
+            queryServiceHttp: 8000
+            # pcf sm service
+            pcfSmServiceHttp: 8000
+            pcfSmServiceHttps: 9443
+            # soap connector
+            soapConnectorHttp: 8000
+            # ue service
+            pcfUeServiceHttp: 8000
+            pcfUeServiceHttps: 9443
+            # udr and chf connector service
+            udrConnectorHttp: 8000
+            udrConnectorHttps: 9443
+            chfConnectorHttp: 8000
+            chfConnectorHttps: 9443
+            # nrf client
+            nrfClientNfDiscoveryHttp: &containerNrfClientNfDiscoveryHttp 8000
+            nrfClientNfManagementHttp: &containerNrfClientNfManagementHttp 8000
+            nrfClientNfDiscoveryHttps: &containerNrfClientNfDiscoveryHttps 9443
+            nrfClientNfManagementHttps: &containerNrfClientNfManagementHttps 9443
+            # ingress gateway
+            ingressGatewayHttp: &containerIngressGatewayHttp 8000
+            ingressGatewayHttps: &containerIngressGatewayHttps 9443
+            # alternate route service : Note: This port shall not be same as alternateRouteServiceHazelcast which is 8000 in this sample custom values file
+            alternateRouteServiceHttp: &containerAlternateRouteServiceHttp 8004
+          # ********  Sub-Section Start: Container Port Customization parameters  ***
+          #**************************************************************************
+
+          # -----Ingress Gateway Settings - BEGIN-----
+          # If httpsEnabled is false, this Port would be HTTP/2.0 Port (unsecured)
+          publicHttpSignalingPort: *svcIngressGatewayHttp
+          # If httpsEnabled is true, this Port would be HTTPS/2.0 Port (secured SSL)
+          publicHttpsSignalingPort: &publicHttpsSignalingPortvalue 443
+          #This port is deprecated and will be removed in a future version
+          publicHttpsSignallingPort: *publicHttpsSignalingPortvalue
+
+
+          configServerPort: *svcConfigServerHttp
+
+          # Enable or disable IP Address allocation from Metallb Pool
+          metalLbIpAllocationEnabled: false
+
+          # Address Pool Annotation for Metallb
+          metalLbIpAllocationAnnotation: "metallb.universe.tf/address-pool: BELL_VIP_cnPCRF_POLICY_INGRESS_GW"
+          # -----Ingress Gateway Settings - END-----
+
+          # API root of PCF that will be used in notification URLs generated by PCF's when sending request to other producer NFs
+          #If not configured then the ingress gateway service name and port will be used as default value. ex:"https://<Helm name>-occnp-ingress-gateway:443"
+          pcfApiRoot: ''
+
+          deploymentNrfClientService:
+            #K8s namespace of PCF
+            envNfNamespace: ''
+            #same as pcfApiRoot
+            nfApiRoot: ''
+            envEgressGatewayPort: *svcEgressGatewayHttp
+
+          # Variable to specify the size of Subscriber Activity Logging Mapping Table
+          subsActMappingTableEntrySize: 20
+
+          configurableErrorCodes:
+            enabled: false
+        #    Following example shows how error codes can be configured for a given exception type
+        #    errorScenarios:
+        #      - exceptionType: "InternalError"
+        #        errorCode: "500"
+        #        errorDescription: "An Internal error occurred while processing the request"
+        #        errorCause: "Internal Error, check if the request is a valid request"
+        #        errorTitle: "Internal Server Error"
+
+        #By Default ENGINE=NDBCLUSTER is supported and it can be changed only during installation, if ENGINE is not NDBCLUSTER
+        #This value should not be modified for upgrade case.
+        dbConfig:
+          dbEngine: NDBCLUSTER
+
+        am-service:
+          envMysqlDatabase: occnp_pcf_am
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 0.5
+              memory: 1Gi
+          minReplicas: 0
+          maxReplicas: 0
+
+        bulwark:
+          resources:
+            limits:
+              cpu: 2
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 1
+              memory: 1Gi
+          minReplicas: 0
+          maxReplicas: 0
+
+        sm-service:
+          envMysqlDatabase: occnp_pcf_sm
+          defaultBsfApiRoot: 'https://bsf.apigateway:8001'
+          auditSmSessionTtl: 86400
+          auditSmSessionMaxTtl: 172800
+          resources:
+            limits:
+              cpu: 1
+              memory: 2Gi
+              ephemeralStorage: 2Gi
+            requests:
+              cpu: 1
+              memory: 2Gi
+          minReplicas: 0
+          maxReplicas: 0
+
+        ue-service:
+          envMysqlDatabase: occnp_pcf_ue
+          replicas: 0
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 0.5
+              memory: 1Gi
+          minReplicas: 0
+          maxReplicas: 0
+
+        user-service:
+          minReplicas: 1
+          maxReplicas: 1
+          udrConnectorResources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 0.5
+              memory: 1Gi
+          udrConnectorMinReplicas: 3
+          udrConnectorMaxReplicas: 3
+          chfConnectorResources:
+            limits:
+              cpu: 6
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 6
+              memory: 1Gi
+          chfConnectorMinReplicas: 1
+          chfConnectorMaxReplicas: 1
+
+        config-server:
+          envMysqlDatabase: occnp_config_server
+          replicas: 1
+          resources:
+            limits:
+              cpu: 2
+              memory: 0.5Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 2
+              memory: 0.5Gi
+
+        queryservice:
+          envMysqlDatabaseSmService: occnp_pcf_sm
+          envMysqlDatabaseUeService: occnp_pcf_ue
+          replicas: 1
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 1
+              memory: 1Gi
+
+        cm-service:
+          envCommonConfigMysqlDatabase: occnp_commonconfig
+          envMysqlDatabase: occnp_cmservice
+          envMysqlDatabaseConfigServer: 'occnp_config_server'
+          replicas: 1
+          resources:
+            limits:
+              cpu: 2
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 2
+              memory: 1Gi
+
+        audit-service:
+          envMysqlDatabase: occnp_audit_service
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 1
+              memory: 1Gi
+
+        nrf-client:
+          # This config map is for providing inputs to NRF-Client
+          configmapApplicationConfig:
+            &configRef
+            # primaryNrfApiRoot - Primary NRF Hostname and Port
+            # SecondaryNrfApiRoot - Secondary NRF Hostname and Port
+            # retryAfterTime - Default downtime(in ISO 8601 duration format) of an NRF detected to be unavailable.
+            # nrfClientType - The NfType of the NF registering
+            # nrfClientSubscribeTypes - the NFType for which the NF wants to subscribe to the NRF.
+            # appProfiles - The NfProfile of the NF to be registered with NRF.
+            # enableF3 - Support for 29.510 Release 15.3
+            # enableF5 - Support for 29.510 Release 15.5
+            # renewalTimeBeforeExpiry - Time Period(seconds) before the Subscription Validity time expires.
+            # validityTime - The default validity time(days) for subscriptions.
+            # enableSubscriptionAutoRenewal - Enable Renewal of Subscriptions automatically.
+            # nfHeartbeatRate - This value specifies the rate at which the NF shall heartbeat with the NRF. The value shall be configured in terms of percentage(1-100). if the heartbeatTimer is 60s, then the NF shall heartbeat at nfHeartBeatRate * 60/100
+            # acceptAdditionalAttributes - Enable additionalAttributes as part of 29.510 Release 15.5
+            # enableVirtualNrfResolution=false
+            # virtualNrfFqdn=nf1stub.ocpcf.svc:8080
+            # virtualNrfScheme=http
+            # virtualNrfPort=8080
+            # requestTimeoutGracePeriod=2
+            # nrfRetryConfig=[{ "serviceRequestType": "ALL_REQUESTS", "primaryNRFRetryCount": 1, "nonPrimaryNRFRetryCount" : 1, "alternateNRFRetryCount" : -1, "errorReasonsForFailure": [503,504,500,"SocketTimeoutException","JsonProcessingException","UnknownHostException","NoRouteToHostException","IOException"], "gatewayErrorCodes": [503,429], "requestTimeout": 100 },{"serviceRequestType": "AUTONOMOUS_NFREGISTER", "primaryNRFRetryCount": 1, "nonPrimaryNRFRetryCount": 1, "alternateNRFRetryCount": -1, "errorReasonsForFailure": [503,504,500,"SocketTimeoutException","JsonProcessingException","UnknownHostException","NoRouteToHostException","IOException"], "gatewayErrorCodes": [503,429], "requestTimeout": 100 }]
+            # healthCheckConfig={ "healthCheckCount": -1, "healthCheckInterval": 5, "requestTimeout": 10, "errorReasonsForFailure": [503,504,500,"SocketTimeoutException","JsonProcessingException","UnknownHostException","NoRouteToHostException","IOException"], "gatewayErrorCodes": [503,429] }
+            profile: |-
+              [appcfg]
+              primaryNrfApiRoot=nrf1-api-gateway.svc:80
+              secondaryNrfApiRoot=nrf2-api-gateway.svc:80
+              nrfScheme=http
+              retryAfterTime=PT120S
+              nrfClientType=PCF
+              nrfClientSubscribeTypes=CHF,UDR,BSF
+              appProfiles=[{ "nfInstanceId": "fe7d992b-0541-4c7d-ab84-c6d70b1b0123", "nfType": "PCF", "nfStatus": "REGISTERED", "plmnList": null, "nsiList": null, "fqdn": "occnp-ocpm-ingress-gateway.ocpcf.svc", "interPlmnFqdn": null, "ipv4Addresses": null, "ipv6Addresses": null, "priority": null, "capacity": null, "load": 80, "locality": null, "pcfInfo": { "dnnList": [ "internet", "volte" ], "supiRanges": [ { "start": "12123444444", "end": "232332323323232", "pattern": null } ] }, "customInfo": null, "recoveryTime": null, "nfServices": [ { "serviceInstanceId": "03063893-cf9e-4f7a-9827-067f6fa9dd01", "serviceName": "npcf-am-policy-control", "versions": [ { "apiVersionInUri": "v1", "apiFullVersion": "1.0.0", "expiry": null } ], "scheme": "http", "nfServiceStatus": "REGISTERED", "fqdn": "occnp-ocpm-ingress-gateway.ocpcf.svc", "interPlmnFqdn": null, "ipEndPoints": null, "apiPrefix": null, "defaultNotificationSubscriptions": null, "allowedPlmns": null, "allowedNfTypes": [ "AMF", "NEF" ], "allowedNfDomains": null, "allowedNssais": null, "priority": null, "capacity": null, "load": null, "recoveryTime": null, "supportedFeatures": null }, { "serviceInstanceId": "03063893-cf9e-4f7a-9827-067f6fa9dd02", "serviceName": "npcf-smpolicycontrol", "versions": [ { "apiVersionInUri": "v1", "apiFullVersion": "1.0.0", "expiry": null } ], "scheme": "http", "nfServiceStatus": "REGISTERED", "fqdn": "occnp-ocpm-ingress-gateway.ocpcf.svc", "interPlmnFqdn": null, "ipEndPoints": null, "apiPrefix": null, "defaultNotificationSubscriptions": null, "allowedPlmns": null, "allowedNfTypes": [ "SMF", "NEF", "AF" ], "allowedNfDomains": null, "allowedNssais": null, "priority": null, "capacity": null, "load": null, "recoveryTime": null, "supportedFeatures": null }, { "serviceInstanceId": "03063893-cf9e-4f7a-9827-067f6fa9dd03", "serviceName": "npcf-ue-policy-control", "versions": [ { "apiVersionInUri": "v1", "apiFullVersion": "1.0.0", "expiry": null } ], "scheme": "http", "nfServiceStatus": "REGISTERED", "fqdn": "occnp-ocpm-ingress-gateway.ocpcf.svc", "interPlmnFqdn": null, "ipEndPoints": null, "apiPrefix": null, "defaultNotificationSubscriptions": null, "allowedPlmns": null, "allowedNfTypes": [ "AMF" ], "allowedNfDomains": null, "allowedNssais": null, "priority": null, "capacity": null, "load": null, "recoveryTime": null, "supportedFeatures": null } ]}]
+              enableF3=true
+              enableF5=true
+              renewalTimeBeforeExpiry=3600
+              validityTime=30
+              enableSubscriptionAutoRenewal=true
+              nfHeartbeatRate=80
+              acceptAdditionalAttributes=false
+              supportedDataSetId=POLICY
+
+          nrf-client-nfdiscovery:
+            # prefix for Metrics
+            metricPrefix: *metricPrefix
+            # suffix for Metrics
+            metricSuffix: *metricSuffix
+            global:
+              ephemeralStorageLimit: 1024
+            configmapApplicationConfig: *configRef
+            envJaegerSamplerParam: '1'
+            envJaegerSamplerType: ratelimiting
+            envJaegerServiceName: pcf-nrf-client-nfdiscovery
+            envPlatformServicePort: *svcAppInfoHttp
+            envPerformanceServicePort: *svcPerfInfoHttp
+            envCfgServerPort: *svcConfigServerHttp
+            containerHttpPort: *containerNrfClientNfDiscoveryHttp
+            containerHttpsPort: *containerNrfClientNfDiscoveryHttps
+            serviceHttpPort: *svcNrfClientNfDiscoveryHttp
+            serviceHttpsPort: *svcNrfClientNfDiscoveryHttps
+            envDiscoveryServicePort: *svcNrfClientNfDiscoveryHttp
+            envManagementServicePort : *svcNrfClientNfManagementHttp
+            serviceMeshCheck: *serviceMeshEnabled
+            istioSidecarReadyUrl: *istioSidecarReadyUrl
+            istioSidecarQuitUrl: *istioSidecarQuitUrl
+
+            deployment:
+              customExtension:
+                annotations: {
+                   #Enable this section for service-mesh based installation:
+          #           traffic.sidecar.istio.io/excludeOutboundPorts: "9000,8095,8096",
+          #           traffic.sidecar.istio.io/excludeInboundPorts: "9000,8095,8096"
+                }
+
+            # Resource Details.
+            cpuRequest: 1
+            cpuLimit: 1
+            memoryRequest: 1Gi
+            memoryLimit: 1Gi
+            # Min replicas to scale to maintain an average CPU utilization
+            minReplicas: 0
+            # Max replicas to scale to maintain an average CPU utilization
+            maxReplicas: 0
+            averageCpuUtil: 80
+            alternateRouteServiceEnabled: false
+            # Common configuration service
+            commonCfgClient:
+              enabled: true
+            commonCfgServer:
+                port: *svcCmServiceHttp
+            dbConfig:
+              dbHost: *mySqlHostRef
+              dbPort: *mySqlPortRef
+              secretName: *dbCredSecretNameRef
+              dbName: occnp_commonconfig
+              # Name of the Key configured for "DB Username" in Secret with following name: "<dbConfig.secretName>"
+              dbUNameLiteral: mysql-username
+              # Name of the Key configured for "DB Password" in Secret with following name: "<dbConfig.secretName>"
+              dbPwdLiteral: mysql-password
+            # Enabled when deployed in serviceMesh
+            serviceMeshCheck: *serviceMeshEnabled
+            # The sidecar (istio url) when deployed in serviceMesh
+            # Default value: http://127.0.0.1:15020/quitquitquit
+            istioSidecarQuitUrl: *istioSidecarQuitUrl
+            # Default value: http://127.0.0.1:15020/ready
+            istioSidecarReadyUrl: *istioSidecarReadyUrl
+
+          nrf-client-nfmanagement:
+            # prefix for Metrics
+            metricPrefix: *metricPrefix
+            # suffix for Metrics
+            metricSuffix: *metricSuffix
+            global:
+              ephemeralStorageLimit: 1024
+            configmapApplicationConfig: *configRef
+            # Replicas for NRF-Client Management - This is exact value without scaling
+            replicas: 1
+            envJaegerSamplerParam: '1'
+            envJaegerSamplerType: ratelimiting
+            envJaegerServiceName: pcf-nrf-client-nfmanagement
+            envPlatformServicePort: *svcAppInfoHttp
+            envPerformanceServicePort: *svcPerfInfoHttp
+            envCfgServerPort: *svcConfigServerHttp
+            containerHttpPort: *containerNrfClientNfManagementHttp
+            containerHttpsPort: *containerNrfClientNfManagementHttps
+            serviceHttpPort: *svcNrfClientNfManagementHttp
+            serviceHttpsPort: *svcNrfClientNfManagementHttps
+
+            deployment:
+              customExtension:
+                annotations: {
+                   #Enable this section for service-mesh based installation
+          #           traffic.sidecar.istio.io/excludeOutboundPorts: "9000,8095,8096",
+          #           traffic.sidecar.istio.io/excludeInboundPorts: "9000,8095,8096"
+                }
+
+            # Resource Details.
+            cpuRequest: 1
+            cpuLimit: 1
+            memoryRequest: 1Gi
+            memoryLimit: 1Gi
+            alternateRouteServiceEnabled: false
+            # Common configuration service
+            commonCfgClient:
+              enabled: true
+            commonCfgServer:
+                port: *svcCmServiceHttp
+            dbConfig:
+              dbHost: *mySqlHostRef
+              dbPort: *mySqlPortRef
+              secretName: *dbCredSecretNameRef
+              dbName: occnp_commonconfig
+              # Name of the Key configured for "DB Username" in Secret with following name: "<dbConfig.secretName>"
+              dbUNameLiteral: mysql-username
+              # Name of the Key configured for "DB Password" in Secret with following name: "<dbConfig.secretName>"
+              dbPwdLiteral: mysql-password
+            # Enabled when deployed in serviceMesh
+            serviceMeshCheck: *serviceMeshEnabled
+            # The sidecar (istio url) when deployed in serviceMesh
+            # Default value: http://127.0.0.1:15020/quitquitquit
+            istioSidecarQuitUrl: *istioSidecarQuitUrl
+            # Default value: http://127.0.0.1:15020/ready
+            istioSidecarReadyUrl: *istioSidecarReadyUrl
+
+        appinfo:
+          serviceMeshCheck: *serviceMeshEnabled
+          istioSidecarReadyUrl: *istioSidecarReadyUrl
+          istioSidecarQuitUrl: *istioSidecarQuitUrl
+          resources:
+            limits:
+              cpu: 1 # 0.5 # (Eduardo) valor default
+              memory: 0.5Gi # 1 # (Eduardo) valor default
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 1 # 0.5 # (Eduardo) valor default
+              memory: 0.5Gi # 1 # (Eduardo) valor default
+          watchMySQL: false
+          replicationStatusCheck: false
+          # The URI provided by the db monitor service to query local DB status. For example:
+          # http://occne-db-monitor-svc.occne-infra:8080/db-tier/status/local
+          dbStatusUri: ""
+          # The URI provided by the realtime db monitor to query the local DB realtime status, for example:
+          # http://occne-db-monitor-svc.occne-infra:8080/db-tier/status/cluster/local/realtime
+          realtimeDbStatusUri: ""
+          # The URI provided by the db monitor service to query replication status. For example:
+          # http://occne-db-monitor-svc.occne-infra:8080/db-tier/status/replication
+          replicationUri: ""
+          # Set Infrastructure services to empty array if any one of below condition is met
+          #  1. Deploying on occne 1.4 or lesser version
+          #  2. Not deploying on OCCNE
+          #  3. Do not wish to monitor infra services such as db-monitor service
+          # then the below mentioned attribute 'infra_services' should be uncommneted and epmty array should be passed as already mentioned.
+          #infraServices: []
+          core_services:
+             # Depends on deployment requirement, remove/comment out useless entry below
+             # Example: if decide to disable am service, it's mandatory to use below setting above:
+             # amServiceEnable: false
+             # with above change, it's mandatory to delete below entry as well from
+             # - '{{ template "service-name-pcf-am" . }}'
+            pcf:
+                - '{{ template "service-name-pcf-sm" . }}'
+                - '{{ template "service-name-pcf-am" . }}'
+                - '{{ template "service-name-pcf-ue" . }}'
+            common:
+                - '{{ template "service-name-ingress-gateway" . }}'
+                - '{{ template "service-name-oc-diam-gateway" . }}'
+                - '{{ template "service-name-nrf-client-nfmanagement" . }}'
+          # Common configuration service
+          commonCfgClient:
+            enabled: true
+          commonCfgServer:
+            port: *svcCmServiceHttp
+          dbConfig:
+            dbHost: *mySqlHostRef
+            dbPort: *mySqlPortRef
+            secretName: *dbCredSecretNameRef
+            dbName: occnp_commonconfig
+            # Name of the Key configured for "DB Username" in Secret with following name: "<dbConfig.secretName>"
+            dbUNameLiteral: mysql-username
+            # Name of the Key configured for "DB Password" in Secret with following name: "<dbConfig.secretName>"
+            dbPwdLiteral: mysql-password
+
+        perf-info:
+          serviceMeshCheck: *serviceMeshEnabled
+          istioSidecarReadyUrl: *istioSidecarReadyUrl
+          istioSidecarQuitUrl: *istioSidecarQuitUrl
+          #Values for CNE 1.8 {tagNamespace: kubernetes_namespace, tagContainerName: container_name, tagServiceName: kubernetes_name}
+          #Values for CNE 1.9 {tagNamespace: namespace, tagContainerName: container, tagServiceName: service}
+          tagNamespace: kubernetes_namespace
+          tagContainerName: container_name
+          tagServiceName: kubernetes_name
+
+          configmapPerformance:
+            prometheus: ''
+          resources:
+            limits:
+              cpu: 0.5
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 0.5
+              memory: 1Gi
+          # envMysqlDatabase is used for overload management.
+          # If the customer does not use the overload management feature, this can be ignored.
+          envMysqlDatabase: ''
+          overloadManager:
+            enabled: false
+            ingressGatewaySvcName: occnp-ingress-gateway
+            ingressGatewayPort: *svcIngressGatewayHttp
+            # nfType is used to query configuration from common cfg server
+            nfType: PCF
+            # diam Gateway overload management feature configurations
+            diamGWPort: *svcDiamGatewayHttp
+
+          # Common configuration service
+          commonCfgClient:
+            enabled: true
+          commonCfgServer:
+            port: *svcCmServiceHttp
+          dbConfig:
+            dbHost: *mySqlHostRef
+            dbPort: *mySqlPortRef
+            secretName: *dbCredSecretNameRef
+            dbName: occnp_commonconfig
+            # Name of the Key configured for "DB Username" in Secret with following name: "<dbConfig.secretName>"
+            dbUNameLiteral: mysql-username
+            # Name of the Key configured for "DB Password" in Secret with following name: "<dbConfig.secretName>"
+            dbPwdLiteral: mysql-password
+
+        diam-connector:
+          envDiameterRealm: 'oracle.com'
+          envDiameterIdentity: 'ocpcf'
+          envMysqlDatabaseConfigServer: 'occnp_config_server'
+          minReplicas: 3 #(Eduardo)
+          maxReplicas: 3 #(Eduardo)
+          resources:
+            limits:
+              cpu: 4 #0. 5 (Eduardo)
+              memory: 2Gi # 1Gi (Eduardo)
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 4 # 0.5 (Eduardo)
+              memory: 2Gi # 1Gi (Eduardo)
+
+        diam-gateway:
+          #The diam-gateway mode i.e. converged, bsf
+          envGatewayMode: converged
+          envMysqlDatabaseConfigServer: 'occnp_config_server'
+          #The diam-gateway deployment type (applicable only when mode is converged) i.e. CONVERGED, PCF and PCRF
+          envGatewayDeploymentType: CONVERGED
+          envDiameterRealm: 'oracle.com'
+          envDiameterIdentity: 'oc-diam-gateway'
+          #This should contain all the k8s cluster worker node name and ip corresponding to it in a format i.e. NodeName1=<ip1>,NodeName2=<ip2>
+          #If LoadBalancer is being used then give all ip as LoadBalancer's ip
+          envDiameterHostIp: '172.30.166.192' # IP of diam-gateway
+          envDbConnStatusHttpEnabled: false
+          envSupportedIpAddressType: 'IPv4'
+          resources:
+            limits:
+              cpu: 4 # 0.5 (Eduardo)
+              memory: 1Gi # 6Gi (Eduardo)
+              ephemeralStorage: 6Gi
+            requests:
+              cpu: 4 # 0.5 (Eduardo)
+              memory: 1Gi
+
+          deployment:
+            customExtension:
+              annotations: {
+                  # Enable this section for service-mesh based installation
+          #          traffic.sidecar.istio.io/excludeOutboundPorts: "9000,5801",
+          #          traffic.sidecar.istio.io/excludeInboundPorts: "9000,5801"
+              }
+
+
+        policyds:
+          envMysqlDatabase: 'occnp_policyds'
+          envMysqlDatabaseConfigServer: 'occnp_config_server'
+          envPdsDbMigrationFlag: false
+          resources:
+            limits:
+              cpu: 6 # 1 (Eduardo)
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 6 # 0.5 (Eduardo)
+              memory: 1Gi
+          minReplicas: 1 #3 # 1 (Eduardo)
+          maxReplicas: 1 # 1 (Eduardo)
+
+        ldap-gateway:
+          minReplicas: 0
+          maxReplicas: 0 #1 (Eduardo)
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 0.5
+              memory: 1Gi
+
+        pre-service:
+          minReplicas: 3
+          maxReplicas: 3
+          resources:
+            limits:
+              cpu: 4 # 1 (Eduardo)
+              memory: 0.5Gi # 1 (Eduardo)
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 4 # 0.5 (Eduardo)
+              memory: 0.5Gi # 1 (Eduardo)
+
+        pcrf-core:
+          # database name core service will connect to
+          envMysqlDatabase: occnp_pcrf_core
+          envDiameterRealm: 'oracle.com'
+          envDiameterIdentity: 'pcrf-core'
+          replicas: 5
+          resources:
+            limits:
+              cpu: 7
+              memory: 8Gi # 1 (Eduardo)
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 7
+              memory: 8Gi # 1 (Eduardo)
+          minReplicas: 2 #5 (Eduardo)
+          maxReplicas: 2 #5 (Eduardo)
+
+        soap-connector:
+          replicas: 0
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 0.5
+              memory: 1Gi
+
+        binding:
+          envMysqlDatabase: occnp_binding
+          bsfEnabled: false
+          replicas: 2 # 3 #(Eduardo)
+          resources:
+            limits:
+              cpu: 5 # 5 #(Eduardo)
+              memory: 1Gi
+              ephemeralStorage: 1Gi
+            requests:
+              cpu: 5 # 0.5 #(Eduardo)
+              memory: 1Gi
+          minReplicas: 2
+          maxReplicas: 3 #(Eduardo)
+
+        ingress-gateway:
+          ports:
+            actuatorPort: *containerMonitoringHttp
+            containerPort: *containerIngressGatewayHttp
+            containersslPort: *containerIngressGatewayHttps
+
+          #Service Mesh (Istio) to take care of load-balancing
+          serviceMeshCheck: *serviceMeshEnabled
+
+          #Enabled when deployed in Ipv6 cluster
+          isIpv6Enabled: false
+
+          # Late arrival handling
+          isSbiTimerEnabled: false
+          publishHeaders: false
+          sbiTimerTimezone: GMT
+
+          deployment:
+            customExtension:
+              annotations: {
+          # Enable this section for service-mesh based installation
+        #           traffic.sidecar.istio.io/excludeOutboundPorts: "9000,8095,8096",
+        #           traffic.sidecar.istio.io/excludeInboundPorts: "9000,8095,8096"
+              }
+
+          # The sidecar (istio url) when deployed in serviceMesh
+          # Default value: http://127.0.0.1:15020/quitquitquit
+          istioSidecarQuitUrl: *istioSidecarQuitUrl
+          # Default value: http://127.0.0.1:15020/ready
+          istioSidecarReadyUrl: *istioSidecarReadyUrl
+          jaegerTracingEnabled: true
+          openTracing :
+            jaeger:
+              udpSender:
+                # udpsender host
+                host: "occne-tracer-jaeger-agent.occne-infra"
+                # udpsender port
+                port: 6831
+              probabilisticSampler: 0.5
+
+          log:
+            level:
+              root: WARN
+              ingress: WARN
+              oauth: WARN
+
+          #keep alive settings
+          ingressServer:
+            keepAlive:
+              enabled: false
+              idealTime: 180  #in seconds
+              count: 9
+              interval: 60 #in seconds
+
+          # Common configuration service
+          commonCfgClient:
+            enabled: true
+          commonCfgServer:
+            port: *svcCmServiceHttp
+          dbConfig:
+            dbHost: *mySqlHostRef
+            dbPort: *mySqlPortRef
+            secretName: *dbCredSecretNameRef
+            dbName: occnp_commonconfig
+            # Name of the Key configured for "DB Username" in Secret with following name: "<dbConfig.secretName>"
+            dbUNameLiteral: mysql-username
+            # Name of the Key configured for "DB Password" in Secret with following name: "<dbConfig.secretName>"
+            dbPwdLiteral: mysql-password
+
+          # ----OAUTH CONFIGURATION - BEGIN ----
+          oauthValidatorEnabled: false
+          nfInstanceId: 6faf1bbc-6e4a-4454-a507-a14ef8e1bc11
+          allowedClockSkewSeconds: 0
+          nrfPublicKeyKubeSecret: ''
+          nrfPublicKeyKubeNamespace: ''
+          validationType: relaxed
+          producerPlmnMNC: 123
+          producerPlmnMCC: 456
+          producerScope: nsmf-pdusession,nsmf-event-exposure
+          nfType: PCF
+          # ----OAUTH CONFIGURATION - END ----
+
+          # In case of ASPEN Service Mesh enabled, to support clear text traffic from outside of the cluster below flag needs to be true.
+          istioIngressTlsSupport:
+            ingressGateway: false
+
+          dnsSrv:
+            port: *svcAlternateRouteServiceHttp #Alternate-route port for scheme 'http'. Change is required if the scheme below changes.
+            scheme: http
+
+
+          #If xfccHeader Validation needs to be set, then set enabled to true and configure the nfList according to entries in the incoming xfcc header
+          #matchCerts will start matching from the right most cert entry in the xfcc header, matchField denotes the entry that needs to be matched against scpList
+          global:
+            xfccHeaderValidation:
+              validation:
+                enabled: false
+                peerList:
+                  - name: scp.com
+                  - name: smf.com
+                  - name: amf.com
+                  - name: scp1.com
+                    enabled: true
+                  - name: scp2.com
+                  - name: scp3.com
+                    enabled: false
+                  - name: xyz.test.com
+                    enabled: true
+                    scheme: http
+                    type: virtual
+                  - name: abc.test.com
+                    enabled: true
+                    scheme: https
+                    type: virtual
+                  - name: xfcc.test.com
+                    enabled: false
+                    scheme: http
+                    type: virtual
+                matchCerts: -1
+                matchField: DNS
+                dnsResolutionInterval: 300000 #this scheduler will be used to resolved failed FQDNS in interval of milliseconds
+                errorTrigger:
+                  - exceptionType: XFCC_HEADER_INVALID
+                    errorCode: '401'
+                    errorCause: xfcc header is invalid
+                    errorTitle: 'Invalid XFCC Header'
+                    errorDescription: 'Invalid XFCC Header'
+                  - exceptionType: XFCC_MATCHCERTCOUNT_GREATER_THAN_CERTS_IN_HEADER
+                    errorCode: '402'
+                    errorCause: matchCerts count is greater than the certs in the request
+                    errorTitle: ''
+                    errorDescription: ''
+                  - exceptionType: XFCC_HEADER_NOT_PRESENT_OR_EMPTY
+                    errorCode: '403'
+                    errorCause: xfcc header is not present or empty in the request
+                    errorTitle: ''
+                    errorDescription: ''
+
+          #We support ServerHeader Configuration Mode as REST, the feature flag for "server" header will need to be enabled through Rest configuration.
+          serverHeaderConfigMode: REST
+
+
+          routesConfig:
+            - id: sm_create_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-sm:{{ .Values.global.servicePorts.pcfSmServiceHttp }}
+              path: /npcf-smpolicycontrol/*/sm-policies
+              order: 1
+              method: POST
+              readBodyForLog: true
+              filters:
+                subLog: true,CREATE,SM
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: sm_delete_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-sm:{{ .Values.global.servicePorts.pcfSmServiceHttp }}
+              path: /npcf-smpolicycontrol/*/sm-policies/{policy-id}/delete
+              order: 2
+              method: POST
+              filters:
+                subLog: true,DELETE,SM
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: sm_update_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-sm:{{ .Values.global.servicePorts.pcfSmServiceHttp }}
+              path: /npcf-smpolicycontrol/*/sm-policies/{policy-id}/update
+              order: 3
+              method: POST
+              readBodyForLog: true
+              filters:
+                subLog: true,UPDATE,SM
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: udr_notify_route
+              uri: http://{{ .Release.Name }}-occnp-udr-connector:{{ .Values.global.servicePorts.udrConnectorHttp }}
+              path: /udrservice/notification/{ueid}
+              order: 4
+              method: POST
+              readBodyForLog: true
+              filters:
+                subLog: true,NOTIFY,UDR
+              metadata:
+                oauthValidator:
+                  enabled: false
+                #xfccHeaderValidation:
+                #  validationEnabled: false
+            - id: chf_terminate_route
+              uri: http://{{ .Release.Name }}-occnp-chf-connector:{{ .Values.global.servicePorts.chfConnectorHttp }}
+              path: /chfservice/spending-limit/terminate
+              order: 5
+              method: POST
+              readBodyForLog: true
+              filters:
+                subLog: true,TERMINATE,CHF
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: chf_notify_route
+              uri: http://{{ .Release.Name }}-occnp-chf-connector:{{ .Values.global.servicePorts.chfConnectorHttp }}
+              path: /chfservice/spending-limit/notify
+              order: 6
+              method: POST
+              readBodyForLog: true
+              filters:
+                subLog: true,NOTIFY,CHF
+              metadata:
+                oauthValidator:
+                  enabled: false
+                #xfccHeaderValidation:
+                #  validationEnabled: false
+            - id: pa_create_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-sm:{{ .Values.global.servicePorts.pcfSmServiceHttp }}
+              path: /npcf-policyauthorization/*/app-sessions
+              order: 7
+              method: POST
+              readBodyForLog: true
+              filters:
+                subLog: true,CREATE,PA
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: pa_delete_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-sm:{{ .Values.global.servicePorts.pcfSmServiceHttp }}
+              path: /npcf-policyauthorization/*/app-sessions/{policy-id}/delete
+              order: 8
+              method: POST
+              filters:
+                subLog: true,DELETE,PA
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: pa_update_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-sm:{{ .Values.global.servicePorts.pcfSmServiceHttp }}
+              path: /npcf-policyauthorization/*/app-sessions/{policy-id}
+              order: 9
+              method: PATCH
+              filters:
+                subLog: true,UPDATE,PA
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: pa_events_subscription_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-sm:{{ .Values.global.servicePorts.pcfSmServiceHttp }}
+              path: /npcf-policyauthorization/*/app-sessions/{policy-id}/events-subscription
+              order: 10
+              method: DELETE,PUT
+              filters:
+                subLog: true,UPDATE,PA
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: reverse_ue_service
+              uri: http://{{ .Release.Name }}-occnp-pcf-ue:{{ .Values.global.servicePorts.pcfUeServiceHttp }}
+              path: /npcf-ue-policy-control/**
+              order: 11
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: reverse_user_udr_notify_service
+              uri: http://{{ .Release.Name }}-occnp-udr-connector:{{ .Values.global.servicePorts.udrConnectorHttp }}
+              path: /udrservice/**
+              order: 12
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: reverse_user_chf_notify_service
+              uri: http://{{ .Release.Name }}-occnp-chf-connector:{{ .Values.global.servicePorts.chfConnectorHttp }}
+              path: /chfservice/**
+              order: 13
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: reverse_nrf_discovery_service
+              uri: http://{{ .Release.Name }}-occnp-nrf-client-nfdiscovery:{{ .Values.global.servicePorts.nrfClientNfDiscoveryHttp }}
+              path: /nnrf-disc/**
+              order: 14
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: reverse_nrf_management_service
+              uri: http://{{ .Release.Name }}-occnp-nrf-client-nfmanagement:{{ .Values.global.servicePorts.nrfClientNfManagementHttp }}
+              path: /nnrf-nfm/**
+              order: 15
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: reverse_nrf_notify_service
+              uri: http://{{ .Release.Name }}-occnp-nrf-client-nfmanagement:{{ .Values.global.servicePorts.nrfClientNfManagementHttp }}
+              path: /nnrf-client/**
+              order: 16
+              metadata:
+                oauthValidator:
+                  enabled: false
+                #xfccHeaderValidation:
+                #  validationEnabled: false
+            - id: reverse_soapconnector_service
+              uri: http://{{ .Release.Name }}-occnp-soap-connector:{{ .Values.global.servicePorts.soapConnectorHttp }}
+              path: /pcrf/PCRFDataInfo/**
+              order: 17
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: reverse_ue_service_notify
+              uri: http://{{ .Release.Name }}-occnp-pcf-ue:{{ .Values.global.servicePorts.pcfUeServiceHttp }}
+              path: /namf-comm/**
+              order: 18
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: am_create_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-am:{{ .Values.global.servicePorts.pcfAmServiceHttp }}
+              path: /npcf-am-policy-control/*/policies
+              order: 19
+              method: POST
+              readBodyForLog: true
+              filters:
+                subLog: true,CREATE,AM
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: am_delete_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-am:{{ .Values.global.servicePorts.pcfAmServiceHttp }}
+              path: /npcf-am-policy-control/*/policies/{policy-id}
+              order: 20
+              method: DELETE
+              filters:
+                subLog: true,DELETE,AM
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+            - id: am_update_session_route
+              uri: http://{{ .Release.Name }}-occnp-pcf-am:{{ .Values.global.servicePorts.pcfAmServiceHttp }}
+              path: /npcf-am-policy-control/*/policies/{policy-id}/update
+              order: 21
+              method: POST
+              readBodyForLog: true
+              filters:
+                subLog: true,UPDATE,AM
+              #metadata:
+              #  xfccHeaderValidation:
+              #    validationEnabled: false
+
+          # Enable it to accept incoming http requests
+          enableIncomingHttp: true
+
+          # ---- HTTPS Configuration - BEGIN ----
+          enableIncomingHttps: false
+
+          service:
+            ssl:
+              privateKey:
+                k8SecretName: occnp-gateway-secret
+                k8NameSpace: occnp
+                rsa:
+                  fileName: rsa_private_key_pkcs1.pem
+              certificate:
+                k8SecretName: occnp-gateway-secret
+                k8NameSpace: occnp
+                rsa:
+                  fileName: ocegress.cer
+              caBundle:
+                k8SecretName: occnp-gateway-secret
+                k8NameSpace: occnp
+                fileName: caroot.cer
+              keyStorePassword:
+                k8SecretName: occnp-gateway-secret
+                k8NameSpace: occnp
+                fileName: key.txt
+              trustStorePassword:
+                k8SecretName: occnp-gateway-secret
+                k8NameSpace: occnp
+                fileName: trust.txt
+          resources:
+            limits:
+              cpu: 4
+              memory: 4Gi # 1 #(Eduardo)
+            requests:
+              cpu: 4
+              memory: 4Gi # 1 #(Eduardo)
+          # Number of Pods must always be available, even during a disruption.
+          minAvailable: 1
+          # Min replicas to scale to maintain an average CPU utilization
+          minReplicas: 3 #(Eduardo)
+          # Max replicas to scale to maintain an average CPU utilization
+          maxReplicas: 3 #(Eduardo)
+
+
+        egress-gateway:
+          # enabling this egress-gateway will add Forwarded and x-Forwaredheaders
+          enableForwardedHeader: false
+          # Enabled when deployed in serviceMesh
+          serviceMeshCheck: *serviceMeshEnabled
+
+          #Enabled when deployed in Ipv6 cluster
+          isIpv6Enabled: false
+
+          # Late arrival handling
+          isSbiTimerEnabled: false
+          sbiTimerTimezone: GMT
+
+          deployment:
+            customExtension:
+              annotations: {
+                # Enable this section for service-mesh based installation
+        #           traffic.sidecar.istio.io/excludeOutboundPorts: "9000,8095,8096",
+        #           traffic.sidecar.istio.io/excludeInboundPorts: "9000,8095,8096"
+              }
+
+          # The sidecar (istio url) when deployed in serviceMesh
+          # Default value: http://127.0.0.1:15020/quitquitquit
+          istioSidecarQuitUrl: *istioSidecarQuitUrl
+          # Default value: http://127.0.0.1:15020/ready
+          istioSidecarReadyUrl: *istioSidecarReadyUrl
+          serviceEgressGateway:
+            actuatorPort: *containerMonitoringHttp
+            port: *svcEgressGatewayHttp
+          retryAfter:
+            enabled: true
+
+          jaegerTracingEnabled: true
+          openTracing :
+            jaeger:
+              udpSender:
+                # udpsender host
+                host: "occne-tracer-jaeger-agent.occne-infra"
+                # udpsender port
+                port: 6831
+              probabilisticSampler: 0.5
+
+          # configuration to enable DNS resolution with TTL
+          honorDnsRecordttl: false
+          # configuration to enable scheduler which removes unused FQDN
+          unusedDestinationCleanup: false
+          # unused FQDN timeframe
+          unusedDestinationCleanupAfter: 1800000 #(ms)
+          # FQDN clean up timer trigger interval
+          unusedDestinationCleanupScheduler: 300000 #(ms)
+
+          # Common configuration service
+          commonCfgClient:
+            enabled: true
+          commonCfgServer:
+            port: *svcCmServiceHttp
+          dbConfig:
+            dbHost: *mySqlHostRef
+            dbPort: *mySqlPortRef
+            secretName: *dbCredSecretNameRef
+            dbName: occnp_commonconfig
+            # Name of the Key configured for "DB Username" in Secret with following name: "<dbConfig.secretName>"
+            dbUNameLiteral: mysql-username
+            # Name of the Key configured for "DB Password" in Secret with following name: "<dbConfig.secretName>"
+            dbPwdLiteral: mysql-password
+
+          log:
+            level:
+              root: WARN
+              egress: WARN
+              oauth: WARN
+
+          # ---- Oauth Configuration - BEGIN ----
+          oauthClient:
+            enabled: false
+            dnsSrvEnabled: false
+            nrfClientQueryEnabled: false
+            httpsEnabled: false
+            virtualFqdn: nrf.oracle.com:80
+            staticNrfList:
+              - nrf1.oracle.com:80
+            nfInstanceId: fe7d992b-0541-4c7d-ab84-c6d70b1b01b1
+            consumerPlmnMNC: 345
+            consumerPlmnMCC: 567
+            maxRetry: 2
+            apiPrefix: ""
+            errorCodeSeries: 4XX
+            retryAfter: 5000
+            nrfClientConfig:
+              serviceName: "occnp-nrf-client-nfmanagement"
+              host: 10.233.49.44
+              port: 8000
+              nrfClientRequestMap: "/v1/nrf-client/subscriptions/nrfRouteList"
+          # ---- Oauth Configuration - END ----
+
+          # ---- HTTPS Configuration - BEGIN ----
+
+          #Enabling it for egress https requests
+          enableOutgoingHttps: false
+
+          egressGwCertReloadEnabled: false
+          egressGwCertReloadPath: /egress-gw/store/reload
+
+          service:
+            ssl:
+              privateKey:
+                k8SecretName: ocpcf-gateway-secret
+                k8NameSpace: ocpcf
+                rsa:
+                  fileName: rsa_private_key_pkcs1.pem
+                ecdsa:
+                  fileName: ssl_ecdsa_private_key.pem
+              certificate:
+                k8SecretName: ocpcf-gateway-secret
+                k8NameSpace: ocpcf
+                rsa:
+                  fileName: ocegress.cer
+                ecdsa:
+                  fileName: ssl_ecdsa_certificate.crt
+              caBundle:
+                k8SecretName: ocpcf-gateway-secret
+                k8NameSpace: ocpcf
+                fileName: caroot.cer
+              keyStorePassword:
+                k8SecretName: ocpcf-gateway-secret
+                k8NameSpace: ocpcf
+                fileName: key.txt
+              trustStorePassword:
+                k8SecretName: ocpcf-gateway-secret
+                k8NameSpace: ocpcf
+                fileName: trust.txt
+          # ---- HTTPS Configuration - END ----
+
+          # ---- SCP Configuration - BEGIN ----
+          # globalretry can be enabled only when scpRerouteEnabled flag is set to true. This is an OPTIONAL configuration. And
+          # it is applied only when no "retries" specified under routesConfig
+          globalretry:
+            enabled: false
+            retries: 2
+
+          # This is global parameter which will be taken into consideration if route (under
+          # routeConfig section) based httpsTargetOnly parameter is not available.
+          # true: Select SbiRouting instances for https list only
+          # false: Run existing logic as per provided scheme.
+          httpsTargetOnly: "true"
+
+          #true: Means change Scheme of RURI to http
+          #false: Keep scheme as is.
+          httpRuriOnly: "true"
+
+          # Mode of operation for sbiRouting. Possible values are HELM, REST
+          sbiRoutingConfigMode: HELM
+
+          #SBIRouting Configuration
+          sbiRouting:
+            # Default scheme applicable when 3gpp-sbi-target-apiroot header is missing
+            sbiRoutingDefaultScheme: https
+            # Set this flag to true if re-routing to multiple SCP instances is to be enabled.
+            sbiRerouteEnabled: true
+            peerConfiguration:
+              - id: peer1
+                host: scp1.test.com
+                port: 80
+                apiPrefix: "/"
+              - id: peer2
+                host: scp2.test.com
+                port: 80
+                apiPrefix: "/"
+            peerSetConfiguration:
+              - id: set0
+                httpConfiguration:
+                  - priority: 1
+                    peerIdentifier: peer1
+                  - priority: 2
+                    peerIdentifier: peer2
+                httpsConfiguration:
+                  - priority: 1
+                    peerIdentifier: peer1
+                  - priority: 2
+                    peerIdentifier: peer2
+
+        # # While uncommenting make sure that routeConfigMode , routesConfig and sbiRouting are in the same level of indentation
+        # # Mode of configuration for configuring routes. Possible values are HELM, REST
+        #  routeConfigMode: HELM
+        #  routesConfig:
+        #  - id: udr_via_scp
+        #    uri: http://request.uri
+        #    path: /nudr-dr/**
+        #    order: 1
+        #    metadata:
+        #      # Enable to select SbiRouting instances for https list only
+        #      httpsTargetOnly: false
+        #      # Enable to change the Scheme of Request URI to http
+        #      httpRuriOnly: false
+        #      # Enable to configure SBI routing functionality, if enabled SBIRoutingFilter will be applicable.
+        #      sbiRoutingEnabled: false
+        #      # Enable to Re-route the message to alternate SCP based on the sever-header and error cause filters defined in  "withServerHeaderSupport" filter clause.
+        #      serverHeaderEnabled: false
+        #      serverheadernfTypes:
+        #      - SCP
+        #      - BSF
+        #      - UDR
+        #      - CHF
+        #
+        #    filterName1:
+        #      name: SBIRoutingFilter # name of the routing filter cannot be changed
+        #      peerSetIdentifier: set0
+        #      alternateOnReroute: false
+        #    filterName2:
+        #      # The below configuration is applicable when serverHeaderEnabled under metadata is set to false
+        #      name: SBIReroute #name of the routing filter cannot be changed
+        #      retries: 2
+        #      methods: GET, POST, PUT, DELETE, PATCH
+        #      # This is an HttpStatus (ENUM).
+        #      # NOTE: Re-route will be applicable if response contains the following status codes
+        #      statuses:
+        #      - status: BAD_REQUEST
+        #      - status: INTERNAL_SERVER_ERROR
+        #      - status: BAD_GATEWAY
+        #      - status: NOT_FOUND
+        #      exceptions:
+        #      - exception: java.util.concurrent.TimeoutException
+        #      - exception: java.net.UnknownHostException
+        #      # The below configuration is applicable when serverHeaderEnabled under metadata is set to true
+        #      withServerHeaderSupport:
+        #        retries: 3
+        #        methods: GET, POST, PUT, DELETE, PATCH
+        #        # This is an HttpStatus (ENUM).
+        #        # NOTE: Re-route will be applicable if response contains the following status codes
+        #        statuses:
+        #        - status: BAD_REQUEST
+        #        - status: INTERNAL_SERVER_ERROR
+        #        - status: BAD_GATEWAY
+        #        - status: NOT_FOUND
+        #        exceptions:
+        #        - exception: java.util.concurrent.TimeoutException
+        #        - exception: java.net.UnknownHostException
+        #
+        #  serverHeader:
+        #    # Only applicable when serverHeaderEnabled is true
+        #    autoBlackListProxy:
+        #      enabled: false # Only true/false allowed
+        #      # List of error codes based on which SCP will be blacklisted.
+        #      # NOTE:If the errorCodes value is set to "-1" then all the error codes of that respective errorSet are included.
+        #      errorCodeList:
+        #      - errorSetId: 4XX
+        #        errorCodes: 401, 402, 403, 404
+        #      - errorSetId: 5XX
+        #        errorCodes: -1
+        #      blacklistingPeriod: 60000
+        #  # Note: If retry-after header is present in response then that time will be considered for blacklisting
+
+          dnsSrv:
+            port: *svcAlternateRouteServiceHttp
+            errorCodeOnDNSResolutionFailure: 500
+            errorDescriptionOnDNSResolutionFailure: ""
+            errorCauseOnDNSResolutionFailure: ""
+            errorTitleOnDNSResolutionFailure: ""
+
+          # ---- SCP Configuration - END ----
+
+          #Enable this if loadbalancing is to be done by egress instead of K8s
+          K8ServiceCheck: false
+          resources:
+            limits:
+              cpu: 4
+              memory: 4Gi # 1 #(Eduardo)
+            requests:
+              cpu: 4
+              memory: 4Gi # 1 #(Eduardo)
+          # Number of Pods must always be available, even during a disruption.
+          minAvailable: 1
+          # Min replicas to scale to maintain an average CPU utilization
+          minReplicas: 3 #(Eduardo)
+          # Max replicas to scale to maintain an average CPU utilization
+          maxReplicas: 3 #(Eduardo)
+
+
+        alternate-route:
+          ports:
+            servicePort: *svcAlternateRouteServiceHttp
+            containerPort: *containerAlternateRouteServiceHttp
+            actuatorPort: *containerMonitoringHttp
+          # Enabled when deployed in serviceMesh
+          serviceMeshCheck: *serviceMeshEnabled
+
+          #Enabled when deployed in Ipv6 cluster
+          isIpv6Enabled: false
+
+          deployment:
+            customExtension:
+              annotations: {
+                # Enable this section for service-mesh based installation
+        #           traffic.sidecar.istio.io/excludeOutboundPorts: "9000,8095,8096",
+        #           traffic.sidecar.istio.io/excludeInboundPorts: "9000,8095,8096"
+              }
+
+          # The sidecar (istio url) when deployed in serviceMesh
+          # Default value: http://127.0.0.1:15020/quitquitquit
+          istioSidecarQuitUrl: *istioSidecarQuitUrl
+          # Default value: http://127.0.0.1:15020/ready
+          istioSidecarReadyUrl: *istioSidecarReadyUrl
+          # Resource details
+          minReplicas: 3 #(Eduardo)
+          maxReplicas: 3 #(Eduardo)
+          resources:
+            limits:
+              cpu: 2 # 1 #(Eduardo)
+              memory: 2Gi # 4 #(Eduardo)
+            requests:
+              cpu: 2 # 1 #(Eduardo)
+              memory: 2Gi
+            target:
+              averageCpuUtil: 80
+
+          ports:
+            servicePort: *svcAlternateRouteServiceHttp
+            containerPort: *containerAlternateRouteServiceHttp
+            actuatorPort: *containerMonitoringHttp
+          hazelcast:
+            port: *svcAlternateRouteServiceHazelcast
+          log:
+            level:
+              root: WARN
+              altroute: WARN
+
+          # Common configuration service
+          commonCfgClient:
+            enabled: true
+          commonCfgServer:
+            port: *svcCmServiceHttp
+          dbConfig:
+            dbHost: *mySqlHostRef
+            dbPort: *mySqlPortRef
+            secretName: *dbCredSecretNameRef
+            dbName: occnp_commonconfig
+            # Name of the Key configured for "DB Username" in Secret with following name: "<dbConfig.secretName>"
+            dbUNameLiteral: mysql-username
+            # Name of the Key configured for "DB Password" in Secret with following name: "<dbConfig.secretName>"
+            dbPwdLiteral: mysql-password
+
+          #Static virtual FQDN Config
+          staticVirtualFqdns:
+            - name: https://abc.test.com
+              alternateFqdns:
+                - target: abc.test.com
+                  port: 5060
+                  priority: 10
+                - target: xyz.test.com
+                  port: 5060
+                  priority: 20
+            - name: http://xyz.test.com
+              alternateFqdns:
+                - target: xyz.test.com
+                  port: 5060
+                  priority: 10
+                - target: abc.test.com
+                  port: 5060
+                  priority: 20
+
+          #Flag to control if DNS-SRV queries are sent to coreDNS or not
+          dnsSrvEnabled: true
+          #Below configuration is for customizing the format of FQDN which will used while querying coreDNS for SRV Records
+          dnsSrvFqdnSetting:
+            enabled: true  #If this flag is disabled, then default value of "_{scheme}._tcp.{fqdn}." will be used for Pattern
+            pattern: "_{scheme}._tcp.{fqdn}."   #Ex: _http._tcp.service.example.org.
+
+          # enable jaeger tracing
+          jaegerTracingEnabled: false
+
+          openTracing:
+            jaeger:
+              udpSender:
+                # udpsender host
+                host: "occne-tracer-jaeger-agent.occne-infra"
+                # udpsender port
+                port: 6831
+              probabilisticSampler: 0.5
+  - kdu_name: unibo
+    additionalParams:
+      env:
+        mecbase: test101

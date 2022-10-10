@@ -1,0 +1,22 @@
+nsd:
+  nsd:
+  - description: NS consisting of a single KNF mec_knf connected to mgmt network
+    designer: OSM
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: mec
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: mec
+            constituent-cpd-id: mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        vnfd-id: mec_knf
+    id: mec_ns
+    name: mec_ns
+    version: '1.0'
+    virtual-link-desc:
+    - id: mgmtnet
+      vim-network-name: osm-ext
+    vnfd-id:
+    - mec_knf

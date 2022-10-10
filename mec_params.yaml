@@ -1,0 +1,68 @@
+k8s-namespace: mec
+vld:
+- name: mgmtnet
+  vim-network-name: osm-ext
+additionalParamsForVnf:
+- member-vnf-index: mec
+  additionalParamsForKdu:
+  - kdu_name: mec
+    additionalParams:
+      env:
+        global:
+          repository: "whiteregistry.mnty.tcloud.movistar.com.mx/oracle/dbtier"
+          siteid: 1
+          envMysqlHost: &mySqlHostRef 'mysql-connectivity-service.mnty-ns-cnpcrf-cnpdbtier'
+          envMysqlPort: &mySqlPortRef '3306'
+          sitename: mnty
+          image:
+            name: mysql-cluster
+            tag: 22.1.2
+            imagePullPolicy: IfNotPresent
+          mgmReplicaCount: 3
+          ndbReplicaCount: 30
+          apiReplicaCount: 2
+          ndbappReplicaCount: 23
+          domain: cluster.local
+          namespace: mnty-ns-cnpcrf-cnpdbtier
+          accessModes: ReadWriteOnce
+          storageClassName: cinder-csi-rep-ssd
+          isDeploymentTypeCndbtier: true
+          useasm: false
+          istioSidecarQuitUrl: "http://127.0.0.1:15020/quitquitquit"
+          istioSidecarReadyUrl: "http://127.0.0.1:15020/healthz/ready"
+          # When k8s is used in IPv6 only or in dual-stack mode, set useIPv6 to true
+          useIPv6: false
+  - kdu_name: unibo02
+    additionalParams:
+      env:
+        mecbase: test02
+        global:
+          repository: "whiteregistry.mnty.tcloud.movistar.com.mx/oracle/dbtier"
+          siteid: 1
+          sitename: mnty
+          dbHost: &mySqlHostRef 'mysql-connectivity-service.mnty-ns-cnpcrf-cnccdbtier'
+          dbPort: &mySqlPortRef '3306'
+          dbName: &mySqlDbRef cncccommonconfig
+          secretName: &mySqlSecretNameRef cncc-mnty-db-secret
+          image:
+            name: mysql-cluster
+            tag: 22.1.2
+            imagePullPolicy: IfNotPresent
+          mgmReplicaCount: 3
+          ndbReplicaCount: 4
+          apiReplicaCount: 0
+          ndbappReplicaCount: 2
+          domain: cluster.local
+          namespace: mnty-ns-cnpcrf-cnccdbtier
+          accessModes: ReadWriteOnce
+          storageClassName: cinder-csi-rep-ssd
+          isDeploymentTypeCndbtier: true
+          useasm: false
+          istioSidecarQuitUrl: "http://127.0.0.1:15020/quitquitquit"
+          istioSidecarReadyUrl: "http://127.0.0.1:15020/healthz/ready"
+          # When k8s is used in IPv6 only or in dual-stack mode, set useIPv6 to true
+          useIPv6: false
+  - kdu_name: unibo03
+    additionalParams:
+      env:
+        mecbase: test03

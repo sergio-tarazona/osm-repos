@@ -1,0 +1,1 @@
+d923a96d97820f87908542d56f5fc943	oai_knf/oai_vnfd.yaml
