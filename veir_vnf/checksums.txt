@@ -1,0 +1,1 @@
+a81c905cdbc5acc5eb46105e0d98afe2	veir_vnf/veir_vnfd.yaml

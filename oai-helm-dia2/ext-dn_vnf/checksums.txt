@@ -5,7 +5,7 @@ bab94b40465b1a33f766f12be4cf3992	ext-dn_vnf/ext-dn_vnfd.yaml
 96c62283405c349b77a78f358b05d0d3	ext-dn_vnf/helm-charts/eechart/source/install.sh
 2b1fbf81445e23e42fc789bf2d945ea1	ext-dn_vnf/helm-charts/eechart/source/docker-compose.yaml
 54d01b806ff95e5056ce6b09f33504e5	ext-dn_vnf/helm-charts/eechart/source/run_ssh.sh
-3ae77dc3f0db23b80177994ef5168413	ext-dn_vnf/helm-charts/eechart/source/vnf_ee.py
+5c815efdb9a37faf6155d16ff5f7176e	ext-dn_vnf/helm-charts/eechart/source/vnf_ee.py
 71e303b14ec4576d8fafc13274d5742c	ext-dn_vnf/helm-charts/eechart/source/playbook.yaml
 7a6d6021216df31fd025bc007ee1f60d	ext-dn_vnf/helm-charts/eechart/source/mylib.py
 ca1873d48a82286ac6965a9fd6f1c682	ext-dn_vnf/helm-charts/eechart/templates/mibs.yaml
@@ -13,7 +13,7 @@ ca1873d48a82286ac6965a9fd6f1c682	ext-dn_vnf/helm-charts/eechart/templates/mibs.y
 b0efced0503bc26bdce1657230de249d	ext-dn_vnf/helm-charts/eechart/templates/secret.yaml
 84b5a528bbbc1563a1ad98004c09402a	ext-dn_vnf/helm-charts/eechart/templates/NOTES.txt
 f28575b8f81397b1d0c30ed16980be02	ext-dn_vnf/helm-charts/eechart/templates/generator.yaml
-fb19ba1aff8bac6f8cca211fd110b4e8	ext-dn_vnf/helm-charts/eechart/templates/statefulset.yaml
+eba72cb70b57902eb3a51d589281eb2e	ext-dn_vnf/helm-charts/eechart/templates/statefulset.yaml
 6acdf61091eec49dda2dc96d39df5760	ext-dn_vnf/helm-charts/eechart/templates/service.yaml
 7d3b0e70c2d839a05cc39517ddd77125	ext-dn_vnf/helm-charts/eechart/templates/_helpers.tpl
 faaae1a2df6c2d6139d412a05e52ef4f	ext-dn_vnf/helm-charts/eechart/templates/serviceaccount.yaml

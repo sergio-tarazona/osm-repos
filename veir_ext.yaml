@@ -1,0 +1,31 @@
+ssh_keys:
+- ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDrcvnKVl3o2cN7YFmajQ2RqGGRVgL0OhdkQCXpehJSL/7rxD0rURlUCipqAvqzDQ0UvfPDxWKOJSxhZRY0SCOlb4W6WNBW7hTE31AjS0YtH/JUimc99567y3F1937sy3nzt4yAlIAoI3y7ZZKJI4EP29A47TZ2WbAuQhI/TsDbJmNpXLB0XtBvzTMJuPffwJep0nWp2nYyv21NBBk5rQF6yTi2dDJ3DwcatfaIv5o0UeI07mbyEmxV2hVrIxPKv3KG65dBvbvF+sjdFMp0tJUfqDn/FJso+jqlwmmvrtk+8bmhL7vzzMyUXyfCjUV2G+u0GOPjl3Q+rnxjCsl2yEib
+vnf:
+- member-vnf-index: vEIR
+  vdu:
+  - id: GTW
+    interface:
+    - name: vdu-eth1
+      ip-address: 10.116.2.10
+  - id: DRA
+    interface:
+    - name: vdu-eth1
+      ip-address: 10.116.2.15    
+  internal-vld:
+  - name: NET_vEIR_CDR 
+    ip-profile:
+       ip-version: ipv4
+       subnet-address: 10.116.2.0/27
+       gateway-address: 10.116.2.1
+       dhcp-params:
+         enabled: true
+vld:
+- name: NET_vEIR_OAM
+  vim-network-name: osm-ext
+  vnfd-connection-point-ref:
+  - member-vnf-index-ref: vEIR
+    vnfd-connection-point-ref: ext-gtw-oam
+    ip-address: 172.21.248.222
+  - member-vnf-index-ref: vEIR
+    vnfd-connection-point-ref: ext-dra-oam
+    ip-address: 172.21.249.222

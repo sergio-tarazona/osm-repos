@@ -1,8 +1,8 @@
 ssh_keys:
 - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDrcvnKVl3o2cN7YFmajQ2RqGGRVgL0OhdkQCXpehJSL/7rxD0rURlUCipqAvqzDQ0UvfPDxWKOJSxhZRY0SCOlb4W6WNBW7hTE31AjS0YtH/JUimc99567y3F1937sy3nzt4yAlIAoI3y7ZZKJI4EP29A47TZ2WbAuQhI/TsDbJmNpXLB0XtBvzTMJuPffwJep0nWp2nYyv21NBBk5rQF6yTi2dDJ3DwcatfaIv5o0UeI07mbyEmxV2hVrIxPKv3KG65dBvbvF+sjdFMp0tJUfqDn/FJso+jqlwmmvrtk+8bmhL7vzzMyUXyfCjUV2G+u0GOPjl3Q+rnxjCsl2yEib
 k8s-namespace: oai
-vnf:
-- member-vnf-index: gnbsim
-  vimAccountId: 6697ad26-a814-4465-8891-4f7ff43ff4ff
-- member-vnf-index: ext-server
-  vimAccountId: cc1cea5f-229a-49d6-a110-817acac8fc86 
+#vnf:
+#- member-vnf-index: gnbsim
+#  vimAccountId: 69c71040-30a1-4a1b-aa7c-dfa1e149bca5 
+#- member-vnf-index: ext-server
+#  vimAccountId: 11b9d011-c1ca-45ea-abf0-5e70edef15b2 

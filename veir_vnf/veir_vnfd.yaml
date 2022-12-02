@@ -1,0 +1,94 @@
+vnfd:
+  description: vEIR with multiple VDUs and affinity groups
+  df:
+  - id: default-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 2
+        vdu-id: GTW
+      - number-of-instances: 1
+        vdu-id: DRA
+    vdu-profile:
+    - id: GTW
+      min-number-of-instances: 2
+      affinity-or-anti-affinity-group: 
+      - id: affinity-group-1
+    - id: DRA
+      min-number-of-instances: 1
+    affinity-or-anti-affinity-group:
+    - id: affinity-group-1
+      type: anti-affinity
+      scope: nfvi-node
+  ext-cpd:
+  - id: ext-gtw-oam
+    int-cpd:
+      cpd: vdu-eth0-oam
+      vdu-id: GTW
+  - id: ext-dra-oam
+    int-cpd:
+      cpd: vdu-eth0-oam
+      vdu-id: DRA    
+  id: veir-vnf
+  mgmt-cp: ext-gtw-oam
+  product-name: veir-vnf
+  int-virtual-link-desc:
+  - id: NET_vEIR_CDR
+  sw-image-desc:
+  - id: gtw-image
+    image: ubuntu20.04
+    name: gtw-image
+  - id: dra-image
+    image: ubuntu20.04
+    name: dra-image  
+  vdu:
+  - id: GTW
+    name: GTW
+    sw-image-desc: gtw-image
+    virtual-compute-desc: flavor_8_64
+    virtual-storage-desc:
+    - disk_8_64
+    supplemental-boot-data:
+      boot-data-drive: true      
+    int-cpd:
+    - id: vdu-eth0-oam
+      virtual-network-interface-requirement:
+      - name: vdu-eth0
+        virtual-interface:
+          type: PARAVIRT
+    - id: vdu-eth1-cdr
+      int-virtual-link-desc: NET_vEIR_CDR
+      virtual-network-interface-requirement:
+      - name: vdu-eth1
+        virtual-interface:
+          type: PARAVIRT
+  - id: DRA
+    name: DRA
+    sw-image-desc: dra-image
+    virtual-compute-desc: flavor_8_64
+    virtual-storage-desc:
+    - disk_8_64
+    supplemental-boot-data:
+      boot-data-drive: true  
+    int-cpd:
+    - id: vdu-eth0-oam
+      virtual-network-interface-requirement:
+      - name: vdu-eth0
+        virtual-interface:
+          type: PARAVIRT
+    - id: vdu-eth1-cdr
+      int-virtual-link-desc: NET_vEIR_CDR
+      virtual-network-interface-requirement:
+      - name: vdu-eth1
+        virtual-interface:
+          type: PARAVIRT        
+  version: 1.0
+  virtual-compute-desc:
+  - id: flavor_8_64
+    virtual-cpu:
+      num-virtual-cpu: 4
+    virtual-memory:
+      size: 8.0
+  virtual-storage-desc:
+  - id: disk_8_64
+    size-of-storage: 10

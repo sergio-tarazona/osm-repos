@@ -1,0 +1,24 @@
+nsd:
+  nsd:
+  - description: NS for vEIR
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: vEIR
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: vEIR
+            constituent-cpd-id: ext-gtw-oam
+          virtual-link-profile-id: NET_vEIR_OAM
+        - constituent-cpd-id:
+          - constituent-base-element-id: vEIR
+            constituent-cpd-id: ext-dra-oam
+          virtual-link-profile-id: NET_vEIR_OAM
+        vnfd-id: veir-vnf
+    id: veir-ns
+    name: veir-ns
+    version: 1.0
+    virtual-link-desc:
+    - id: NET_vEIR_OAM
+    vnfd-id:
+    - veir-vnf
