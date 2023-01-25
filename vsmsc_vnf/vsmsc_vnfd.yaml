@@ -1,0 +1,152 @@
+vnfd:
+  description: vSMSC with multiple VDUs and affinity groups
+  df:
+  - id: default-df
+    instantiation-level:
+    - id: default-instantiation-level
+      vdu-level:
+      - number-of-instances: 4
+        vdu-id: BEP
+      - number-of-instances: 1
+        vdu-id: OYMSOPP
+    vdu-profile:
+    - id: BEP
+      min-number-of-instances: 2
+      affinity-or-anti-affinity-group: 
+      - id: affinity-group-1
+    - id: OYMSOPP
+      min-number-of-instances: 1
+    affinity-or-anti-affinity-group:
+    - id: affinity-group-1
+      type: anti-affinity
+      scope: nfvi-node
+  ext-cpd:
+  - id: ext-bep-oam
+    int-cpd:
+      cpd: vdu-eth0-oam
+      vdu-id: BEP
+  - id: ext-bep-service
+    int-cpd:
+      cpd: vdu-eth0-service
+      vdu-id: BEP
+  - id: ext-bep-backup
+    int-cpd:
+      cpd: vdu-eth0-backup
+      vdu-id: BEP
+  - id: ext-bep-signal1
+    int-cpd:
+      cpd: vdu-eth0-signal1
+      vdu-id: BEP
+  - id: ext-bep-signal2
+    int-cpd:
+      cpd: vdu-eth0-signal2
+      vdu-id: BEP    
+  - id: ext-oymsopp-oam
+    int-cpd:
+      cpd: vdu-eth0-oam
+      vdu-id: OYMSOPP
+  - id: ext-oymsopp-service
+    int-cpd:
+      cpd: vdu-eth0-service
+      vdu-id: OYMSOPP
+  - id: ext-oymsopp-backup
+    int-cpd:
+      cpd: vdu-eth0-backup
+      vdu-id: OYMSOPP
+  - id: ext-oymsopp-signal1
+    int-cpd:
+      cpd: vdu-eth0-signal1
+      vdu-id: OYMSOPP    
+  - id: ext-oymsopp-signal2
+    int-cpd:
+      cpd: vdu-eth0-signal2
+      vdu-id: OYMSOPP    
+  id: vsmsc-vnf
+  mgmt-cp: ext-oymsopp-oam
+  product-name: vsmsc-vnf
+  sw-image-desc:
+  - id: bep-image
+    image: ubuntu20.04
+    name: bep-image
+  - id: oymsopp-image
+    image: ubuntu20.04
+    name: oymsopp-image  
+  vdu:
+  - id: BPE
+    name: BPE
+    sw-image-desc: bpe-image
+    virtual-compute-desc: flavor_8_64
+    virtual-storage-desc:
+    - disk_8_64
+    supplemental-boot-data:
+      boot-data-drive: true      
+    int-cpd:
+    - id: vdu-eth0-oam
+      virtual-network-interface-requirement:
+      - name: vdu-eth0
+        virtual-interface:
+          type: PARAVIRT
+    - id: vdu-eth0-service
+      virtual-network-interface-requirement:
+      - name: vdu-eth1
+        virtual-interface:
+          type: PARAVIRT  
+    - id: vdu-eth0-backup
+      virtual-network-interface-requirement:
+      - name: vdu-eth2
+        virtual-interface:
+          type: PARAVIRT
+    - id: vdu-eth0-signal1
+      virtual-network-interface-requirement:
+      - name: vdu-eth3
+        virtual-interface:
+          type: PARAVIRT
+    - id: vdu-eth0-signal2
+      virtual-network-interface-requirement:
+      - name: vdu-eth4
+        virtual-interface:
+          type: PARAVIRT      
+  - id: OYMSOPP
+    name: OYMSOPP
+    sw-image-desc: oymsopp-image
+    virtual-compute-desc: flavor_8_64
+    virtual-storage-desc:
+    - disk_8_64
+    supplemental-boot-data:
+      boot-data-drive: true  
+    int-cpd:
+    - id: vdu-eth0-oam
+      virtual-network-interface-requirement:
+      - name: vdu-eth0
+        virtual-interface:
+          type: PARAVIRT
+    - id: vdu-eth0-service
+      virtual-network-interface-requirement:
+      - name: vdu-eth1
+        virtual-interface:
+          type: PARAVIRT       
+    - id: vdu-eth0-backup
+      virtual-network-interface-requirement:
+      - name: vdu-eth2
+        virtual-interface:
+          type: PARAVIRT 
+    - id: vdu-eth0-signal1
+      virtual-network-interface-requirement:
+      - name: vdu-eth3
+        virtual-interface:
+          type: PARAVIRT  
+    - id: vdu-eth0-signal2
+      virtual-network-interface-requirement:
+      - name: vdu-eth4
+        virtual-interface:
+          type: PARAVIRT      
+  version: 1.0
+  virtual-compute-desc:
+  - id: flavor_8_64
+    virtual-cpu:
+      num-virtual-cpu: 4
+    virtual-memory:
+      size: 8.0
+  virtual-storage-desc:
+  - id: disk_8_64
+    size-of-storage: 10

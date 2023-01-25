@@ -1,0 +1,23 @@
+ssh_keys:
+- ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDrcvnKVl3o2cN7YFmajQ2RqGGRVgL0OhdkQCXpehJSL/7rxD0rURlUCipqAvqzDQ0UvfPDxWKOJSxhZRY0SCOlb4W6WNBW7hTE31AjS0YtH/JUimc99567y3F1937sy3nzt4yAlIAoI3y7ZZKJI4EP29A47TZ2WbAuQhI/TsDbJmNpXLB0XtBvzTMJuPffwJep0nWp2nYyv21NBBk5rQF6yTi2dDJ3DwcatfaIv5o0UeI07mbyEmxV2hVrIxPKv3KG65dBvbvF+sjdFMp0tJUfqDn/FJso+jqlwmmvrtk+8bmhL7vzzMyUXyfCjUV2G+u0GOPjl3Q+rnxjCsl2yEib
+vld:
+- name: NET_vSMSC_OAM
+  vnfd-connection-point-ref:
+  - member-vnf-index-ref: vSMSC
+    vnfd-connection-point-ref: ext-bep-oam
+    ip-address: 10.70.10.132
+  - member-vnf-index-ref: vSMSC
+    vnfd-connection-point-ref: ext-oymsopp-oam
+    ip-address: 10.70.10.136
+  ip-profile:
+    ip-version: ipv4
+    subnet-address: 10.70.10.128/26
+    gateway-address: 10.70.10.129
+    dhcp-params:
+      enabled: true
+      count: 2
+      start-address: 10.70.10.132
+  provider-network:
+    physical-network: physnet1 
+    network-type: vlan
+    segmentation-id: '2010'

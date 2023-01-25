@@ -1,0 +1,57 @@
+nsd:
+  nsd:
+  - description: NS for vSMSC
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: vSMSC
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-bep-oam
+          virtual-link-profile-id: NET_vEIR_OAM
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-oymsopp-oam
+          virtual-link-profile-id: NET_vEIR_OAM
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-bep-service
+          virtual-link-profile-id: NET_vEIR_SERVICE
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-oymsopp-service
+          virtual-link-profile-id: NET_vEIR_SERVICE
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-bep-backup
+          virtual-link-profile-id: NET_vEIR_BACKUP
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-oymsopp-backup
+          virtual-link-profile-id: NET_vEIR_BACKUP  
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-bep-signal1
+          virtual-link-profile-id: NET_vEIR_OAM
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-oymsopp-signal1
+          virtual-link-profile-id: NET_vEIR_OAM
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-bep-signal2
+          virtual-link-profile-id: NET_vEIR_OAM
+        - constituent-cpd-id:
+          - constituent-base-element-id: vSMSC
+            constituent-cpd-id: ext-oymsopp-signal2
+          virtual-link-profile-id: NET_vEIR_OAM  
+        vnfd-id: vsmsc-vnf
+    id: vsmsc-ns
+    name: vsmsc-ns
+    version: 1.0
+    virtual-link-desc:
+    - id: NET_vEIR_OAM
+    - id: 
+    vnfd-id:
+    - vsmsc-vnf
