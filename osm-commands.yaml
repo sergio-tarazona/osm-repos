@@ -1,9 +1,9 @@
 #create a vim
-osm vim-create --name whitecloud --user whitestack --password whitestack20$ --auth_url http://172.21.247.1:5000/v3 --tenant whitestack --account_type openstack
+osm vim-create --name whitecloud --user whitestack --password PASSWORD --auth_url http://172.21.247.1:5000/v3 --tenant whitestack --account_type openstack
 #create a vim with sriov physnet
-osm vim-create --name whitecloud --user whitestack --password whitestack20$ --auth_url http://172.21.247.1:5000/v3 --tenant whitestack --account_type openstack --config '{dataplane_physical_net: physnet2, microversion: 2.32}'
+osm vim-create --name whitecloud --user whitestack --password PASSWORD --auth_url http://172.21.247.1:5000/v3 --tenant whitestack --account_type openstack --config '{dataplane_physical_net: physnet2, microversion: 2.32}'
 #create a sdnc
-osm sdnc-create --name onos_etsi --type onos_vpls --url http://172.21.248.11:8181 --user karaf --password karaf
+osm sdnc-create --name onos_etsi --type onos_vpls --url http://172.21.248.11:8181 --user karaf --password PASSWORD
 #update vim with sdnc parameters
 osm vim-update whitecloud --sdn_controller onos_etsi  --sdn_port_mapping sdn_port_mapping.yaml
 #create helm chart repo 
